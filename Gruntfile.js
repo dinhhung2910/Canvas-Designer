@@ -135,5 +135,6 @@ module.exports = function(grunt) {
     // set default tasks to run when grunt is called without parameters
     // http://gruntjs.com/api/grunt.task
     grunt.registerTask('default', ['concat', 'jsbeautifier', 'uglify']);
+    grunt.registerTask('watch', ['watch']);
     grunt.loadNpmTasks('grunt-contrib-watch');
 };

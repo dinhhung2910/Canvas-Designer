@@ -1,4 +1,4 @@
-// Last time updated: 2019-03-08 2:53:41 PM UTC
+// Last time updated: 2020-12-20 1:56:04 PM UTC
 
 // _______________
 // Canvas-Designer
@@ -2498,12 +2498,17 @@
 
     var zoomHandler = {
         scale: 1.0,
+        lastZoomState: null,
         up: function(e) {
+            this.scale = this.lastZoomState !== 'up' ? 1 : this.scale;
             this.scale += .01;
+            this.lastZoomState = 'up';
             this.apply();
         },
         down: function(e) {
+            this.scale = this.lastZoomState !== 'down' ? 1 : this.scale;
             this.scale -= .01;
+            this.lastZoomState = 'down';
             this.apply();
         },
         apply: function() {
@@ -2518,7 +2523,7 @@
             },
             down: function(ctx) {
                 ctx.font = '22px Verdana';
-                ctx.strokeText('-', 15, 30);
+                ctx.strokeText('-', 10, 30);
             }
         }
     };
@@ -3728,7 +3733,7 @@
     }
 
     var canvas = tempContext.canvas,
-        isTouch = 'createTouch' in document;
+        isTouch = 'createTouch' in document || 'ontouchstart' in window;
 
     addEvent(canvas, isTouch ? 'touchstart mousedown' : 'mousedown', function(e) {
         if (isTouch) e = e.pageX ? e : e.touches.length ? e.touches[0] : {
@@ -4061,21 +4066,23 @@
             }
 
             if (index === -1) {
-                if (points.length && points[points.length - 1][0] === 'pencil') {
+                if (points.length && (points[points.length - 1][0] === 'pencil' || points[points.length - 1][0] === 'marker')) {
                     var newArray = [];
                     var length = points.length;
-                    var reverse = points.reverse();
-                    var ended;
-                    for (var i = 0; i < length; i++) {
-                        var point = reverse[i];
-                        if (point[3] == 'start') {
-                            ended = true;
-                        } else if (ended) {
-                            newArray.push(point);
-                        }
-                    }
 
-                    points = newArray.reverse();
+                    /* modification start*/
+                    var index;
+                    for (var i = 0; i < length; i++) {
+                        var point = points[i];
+                        if (point[3] === 'start') index = i;
+                    }
+                    var copy = [];
+                    for (var i = 0; i < index; i++) {
+                        copy.push(points[i]);
+                    }
+                    points = copy;
+                    /*modification ends*/
+
                     drawHelper.redraw();
                     syncPoints(true);
                     return;

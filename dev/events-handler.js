@@ -1,5 +1,5 @@
 var canvas = tempContext.canvas,
-    isTouch = 'createTouch' in document;
+    isTouch = 'createTouch' in document || 'ontouchstart' in window;
 
 addEvent(canvas, isTouch ? 'touchstart mousedown' : 'mousedown', function(e) {
     if (isTouch) e = e.pageX ? e : e.touches.length ? e.touches[0] : {

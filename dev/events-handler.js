@@ -161,13 +161,15 @@ function onkeyup(e) {
     keyCode = e.which || e.keyCode || 0;
 
     if (keyCode === 13 && is.isText) {
-        textHandler.onReturnKeyPressed();
+        // no handle anumore
+        // textHandler.onReturnKeyPressed();
         return;
     }
 
     if (keyCode == 8 || keyCode == 46) {
         if (isBackKey(e, keyCode)) {
-            textHandler.writeText(textHandler.lastKeyPress, true);
+            // no handle anymore
+            // textHandler.writeText(textHandler.lastKeyPress, true);
         }
         return;
     }
@@ -231,7 +233,8 @@ function onkeypress(e) {
 
     var inp = String.fromCharCode(keyCode);
     if (/[a-zA-Z0-9-_ !?|\/'",.=:;(){}\[\]`~@#$%^&*+-]/.test(inp)) {
-        textHandler.writeText(String.fromCharCode(keyCode));
+        // no handle anymore
+        // textHandler.writeText(String.fromCharCode(keyCode));
     }
 }
 

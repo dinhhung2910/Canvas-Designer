@@ -102,6 +102,7 @@ var textHandler = {
         textHandler.blinkCursorInterval = setInterval(textHandler.blinkCursor, 700);
 
         this.showTextTools();
+        this.focusVirtualTextbox();
     },
     mouseup: function(e) {},
     mousemove: function(e) {},
@@ -156,6 +157,32 @@ var textHandler = {
             };
             // child.style.fontSize = child.innerHTML + 'px';
         });
+    },
+
+    /**
+     * In order to support mobile devices,
+     * or support some special language
+     * It will create an hidden textbox
+     * User will type into this textbox
+     */
+    focusVirtualTextbox: function() {
+        var textbox = document.getElementById('virtual-textbox');
+
+        if (!textbox) {
+            textbox = document.createElement('input');
+            textbox.id = 'virtual-textbox';
+            textbox.setAttribute('type', 'text');
+            textbox.style.opacity = '0';
+
+            textbox.addEventListener('keyup', function(e) {
+                this.text = e.target.value;
+                this.fillText(e.target.value);
+            }.bind(this))
+        }
+
+        textbox.value = '';
+        document.body.append(textbox);
+        textbox.focus();
     },
     eachFontFamily: function(callback) {
         var childs = this.fontFamilyBox.querySelectorAll('li');

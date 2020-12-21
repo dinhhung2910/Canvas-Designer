@@ -1,4 +1,4 @@
-// Last time updated: 2020-12-20 1:56:04 PM UTC
+// Last time updated: 2020-12-21 6:53:15 AM UTC
 
 // _______________
 // Canvas-Designer
@@ -1939,6 +1939,7 @@
             textHandler.blinkCursorInterval = setInterval(textHandler.blinkCursor, 700);
 
             this.showTextTools();
+            this.focusVirtualTextbox();
         },
         mouseup: function(e) {},
         mousemove: function(e) {},
@@ -1993,6 +1994,32 @@
                 };
                 // child.style.fontSize = child.innerHTML + 'px';
             });
+        },
+
+        /**
+         * In order to support mobile devices,
+         * or support some special language
+         * It will create an hidden textbox
+         * User will type into this textbox
+         */
+        focusVirtualTextbox: function() {
+            var textbox = document.getElementById('virtual-textbox');
+
+            if (!textbox) {
+                textbox = document.createElement('input');
+                textbox.id = 'virtual-textbox';
+                textbox.setAttribute('type', 'text');
+                textbox.style.opacity = '0';
+
+                textbox.addEventListener('keyup', function(e) {
+                    this.text = e.target.value;
+                    this.fillText(e.target.value);
+                }.bind(this))
+            }
+
+            textbox.value = '';
+            document.body.append(textbox);
+            textbox.focus();
         },
         eachFontFamily: function(callback) {
             var childs = this.fontFamilyBox.querySelectorAll('li');
@@ -3895,13 +3922,15 @@
         keyCode = e.which || e.keyCode || 0;
 
         if (keyCode === 13 && is.isText) {
-            textHandler.onReturnKeyPressed();
+            // no handle anumore
+            // textHandler.onReturnKeyPressed();
             return;
         }
 
         if (keyCode == 8 || keyCode == 46) {
             if (isBackKey(e, keyCode)) {
-                textHandler.writeText(textHandler.lastKeyPress, true);
+                // no handle anymore
+                // textHandler.writeText(textHandler.lastKeyPress, true);
             }
             return;
         }
@@ -3965,7 +3994,8 @@
 
         var inp = String.fromCharCode(keyCode);
         if (/[a-zA-Z0-9-_ !?|\/'",.=:;(){}\[\]`~@#$%^&*+-]/.test(inp)) {
-            textHandler.writeText(String.fromCharCode(keyCode));
+            // no handle anymore
+            // textHandler.writeText(String.fromCharCode(keyCode));
         }
     }
 

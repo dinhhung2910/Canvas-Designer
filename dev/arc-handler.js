@@ -1,170 +1,196 @@
-var arcHandler = {
-    global: {
-        ismousedown: false,
-        prevX: 0,
-        prevY: 0,
-        prevRadius: 0,
-        isCircleDrawn: false,
-        isCircledEnded: true,
-        isClockwise: false,
-        arcRangeContainer: null,
-        arcRange: null
-    },
-    mousedown: function(e) {
-        var g = this.global;
+import {addEvent, find} from './common';
+import globalOptions from './global-options';
 
-        var x = e.pageX - canvas.offsetLeft,
-            y = e.pageY - canvas.offsetTop;
+const arcHandler = {
+  global: {
+    ismousedown: false,
+    prevX: 0,
+    prevY: 0,
+    prevRadius: 0,
+    isCircleDrawn: false,
+    isCircledEnded: true,
+    isClockwise: false,
+    arcRangeContainer: null,
+    arcRange: null,
+  },
+  mousedown: function(e) {
+    const g = this.global;
 
-        g.prevX = x;
-        g.prevY = y;
+    const x = e.pageX - canvas.offsetLeft;
+    const y = e.pageY - canvas.offsetTop;
 
-        g.ismousedown = true;
-    },
-    mouseup: function(e) {
-        var g = this.global;
+    g.prevX = x;
+    g.prevY = y;
 
-        var x = e.pageX - canvas.offsetLeft,
-            y = e.pageY - canvas.offsetTop;
+    g.ismousedown = true;
+  },
+  mouseup: function(e) {
+    const g = this.global;
 
-        if (g.ismousedown) {
-            if (!g.isCircleDrawn && g.isCircledEnded) {
-                var prevX = g.prevX,
-                    prevY = g.prevY,
-                    radius = ((x - prevX) + (y - prevY)) / 3;
+    const x = e.pageX - canvas.offsetLeft;
+    const y = e.pageY - canvas.offsetTop;
 
-                g.prevRadius = radius;
-                g.isCircleDrawn = true;
-                g.isCircleEnded = false;
+    if (g.ismousedown) {
+      if (!g.isCircleDrawn && g.isCircledEnded) {
+        const prevX = g.prevX;
+        const prevY = g.prevY;
+        const radius = ((x - prevX) + (y - prevY)) / 3;
 
-                var c = (2 * Math.PI * radius) / 21,
-                    angle,
-                    xx = prevX > x ? prevX - x : x - prevX,
-                    yy = prevY > y ? prevY - y : y - prevY;
+        g.prevRadius = radius;
+        g.isCircleDrawn = true;
+        g.isCircleEnded = false;
 
-                angle = (xx + yy) / (2 * c);
-                points[points.length] = ['arc', [prevX + radius, prevY + radius, radius, angle, 1], drawHelper.getOptions()];
+        const c = (2 * Math.PI * radius) / 21;
+        let angle;
+        const xx = prevX > x ? prevX - x : x - prevX;
+        const yy = prevY > y ? prevY - y : y - prevY;
 
-                var arcRange = g.arcRange,
-                    arcRangeContainer = g.arcRangeContainer;
+        angle = (xx + yy) / (2 * c);
+        points[points.length] = [
+          'arc',
+          [prevX + radius, prevY + radius, radius, angle, 1],
+          drawHelper.getOptions()];
 
-                arcRangeContainer.style.display = 'block';
-                arcRange.focus();
+        const arcRange = g.arcRange;
+        const arcRangeContainer = g.arcRangeContainer;
 
-                arcRangeContainer.style.top = (y + canvas.offsetTop + 20) + 'px';
-                arcRangeContainer.style.left = x + 'px';
+        arcRangeContainer.style.display = 'block';
+        arcRange.focus();
 
-                arcRange.value = 2;
-            } else if (g.isCircleDrawn && !g.isCircleEnded) {
-                this.end();
-            }
-        }
+        arcRangeContainer.style.top = (y + canvas.offsetTop + 20) + 'px';
+        arcRangeContainer.style.left = x + 'px';
 
-        g.ismousedown = false;
+        arcRange.value = 2;
+      } else if (g.isCircleDrawn && !g.isCircleEnded) {
+        this.end();
+      }
+    }
 
-        this.fixAllPoints();
-    },
-    mousemove: function(e) {
-        var g = this.global;
+    g.ismousedown = false;
 
-        var x = e.pageX - canvas.offsetLeft,
-            y = e.pageY - canvas.offsetTop;
+    this.fixAllPoints();
+  },
+  mousemove: function(e) {
+    const g = this.global;
 
-        var ismousedown = g.ismousedown,
-            isCircleDrawn = g.isCircleDrawn,
-            isCircleEnded = g.isCircledEnded;
+    const x = e.pageX - canvas.offsetLeft;
+    const y = e.pageY - canvas.offsetTop;
 
-        if (ismousedown) {
-            if (!isCircleDrawn && isCircleEnded) {
-                var prevX = g.prevX,
-                    prevY = g.prevY,
-                    radius = ((x - prevX) + (y - prevY)) / 3;
+    const ismousedown = g.ismousedown;
+    const isCircleDrawn = g.isCircleDrawn;
+    const isCircleEnded = g.isCircledEnded;
 
-                tempContext.clearRect(0, 0, 2000, 2000);
+    if (ismousedown) {
+      if (!isCircleDrawn && isCircleEnded) {
+        const prevX = g.prevX;
+        const prevY = g.prevY;
+        const radius = ((x - prevX) + (y - prevY)) / 3;
 
-                drawHelper.arc(tempContext, [prevX + radius, prevY + radius, radius, Math.PI * 2, true]);
-            }
-        }
-    },
-    fixAllPoints: function() {
-        var toFixed = this.toFixed;
+        tempContext.clearRect(0, 0, 2000, 2000);
 
-        for (var i = 0; i < points.length; i++) {
-            var p = points[i],
-                point;
-            if (p[0] === 'arc') {
-                point = p[1];
-                points[i] = ['arc', [toFixed(point[0]), toFixed(point[1]), toFixed(point[2]), toFixed(point[3]), point[4]],
-                    p[2]
-                ];
-            }
-        }
-    },
-    init: function() {
-        var markIsClockwise = find('is-clockwise'),
-            g = this.global;
+        drawHelper.arc(
+          tempContext,
+          [prevX + radius, prevY + radius, radius, Math.PI * 2, true],
+        );
+      }
+    }
+  },
+  fixAllPoints: function() {
+    const toFixed = this.toFixed;
 
-        g.arcRangeContainer = find('arc-range-container');
-        g.arcRange = find('arc-range');
+    for (let i = 0; i < points.length; i++) {
+      const p = points[i];
+      let point;
+      if (p[0] === 'arc') {
+        point = p[1];
+        points[i] = [
+          'arc',
+          [
+            toFixed(point[0]),
+            toFixed(point[1]),
+            toFixed(point[2]),
+            toFixed(point[3]),
+            point[4],
+          ],
+          p[2],
+        ];
+      }
+    }
+  },
+  init: function() {
+    const markIsClockwise = find('is-clockwise');
+    const g = this.global;
 
-        addEvent(markIsClockwise, 'change', function(e) {
-            g.isClockwise = markIsClockwise.checked;
+    g.arcRangeContainer = find('arc-range-container');
+    g.arcRange = find('arc-range');
 
-            g.arcRange.value = arcHandler.toFixed(g.arcRange.value);
-            g.arcRange.focus();
+    addEvent(markIsClockwise, 'change', function(e) {
+      g.isClockwise = markIsClockwise.checked;
 
-            arcHandler.arcRangeHandler(e);
+      g.arcRange.value = arcHandler.toFixed(g.arcRange.value);
+      g.arcRange.focus();
 
-            if (!points.length) return;
+      arcHandler.arcRangeHandler(e);
 
-            var p = points[points.length - 1],
-                point = p[1];
+      if (!points.length) return;
 
-            tempContext.clearRect(0, 0, innerWidth, innerHeight);
-            drawHelper.arc(tempContext, [point[0], point[1], point[2], point[3], point[4]]);
-        });
+      const p = points[points.length - 1];
+      const point = p[1];
 
-        var arcRange = g.arcRange;
-        addEvent(arcRange, 'keydown', this.arcRangeHandler);
-        addEvent(arcRange, 'focus', this.arcRangeHandler);
-    },
-    arcRangeHandler: function(e) {
-        var g = arcHandler.global,
-            arcRange = g.arcRange;
+      tempContext.clearRect(0, 0, innerWidth, innerHeight);
+      drawHelper.arc(
+        tempContext,
+        [point[0], point[1], point[2], point[3], point[4]],
+      );
+    });
 
-        var key = e.keyCode,
-            value = +arcRange.value;
-        if (key == 39 || key == 40) arcRange.value = (value < 2 ? value : 1.98) + .02;
-        if (key == 37 || key == 38) arcRange.value = (value > 0 ? value : .02) - .02;
+    const arcRange = g.arcRange;
+    addEvent(arcRange, 'keydown', this.arcRangeHandler);
+    addEvent(arcRange, 'focus', this.arcRangeHandler);
+  },
+  arcRangeHandler: function(e) {
+    const g = arcHandler.global;
+    const arcRange = g.arcRange;
 
-        if (!key || key == 13 || key == 39 || key == 40 || key == 37 || key == 38) {
-            var range = Math.PI * arcHandler.toFixed(value);
-            var p = points[points.length - 1];
+    const key = e.keyCode;
+    const value = +arcRange.value;
+    if (key == 39 || key == 40) {
+      arcRange.value = (value < 2 ? value : 1.98) + .02;
+    }
+    if (key == 37 || key == 38) {
+      arcRange.value = (value > 0 ? value : .02) - .02;
+    }
 
-            if (p[0] === 'arc') {
-                var point = p[1];
-                points[points.length - 1] = ['arc', [point[0], point[1], point[2], range, g.isClockwise ? 1 : 0],
-                    p[2]
-                ];
+    if (!key || key == 13 || key == 39 || key == 40 || key == 37 || key == 38) {
+      const range = Math.PI * arcHandler.toFixed(value);
+      const p = points[points.length - 1];
 
-                drawHelper.redraw();
-            }
-        }
-    },
-    toFixed: function(input) {
-        return Number(input).toFixed(1);
-    },
-    end: function() {
-        var g = this.global;
-
-        g.arcRangeContainer.style.display = 'none';
-        g.arcRange.value = 2;
-
-        g.isCircleDrawn = false;
-        g.isCircleEnded = true;
+      if (p[0] === 'arc') {
+        const point = p[1];
+        points[points.length - 1] = [
+          'arc',
+          [point[0], point[1], point[2], range, g.isClockwise ? 1 : 0],
+          p[2],
+        ];
 
         drawHelper.redraw();
+      }
     }
+  },
+  toFixed: function(input) {
+    return Number(input).toFixed(1);
+  },
+  end: function() {
+    const g = this.global;
+
+    g.arcRangeContainer.style.display = 'none';
+    g.arcRange.value = 2;
+
+    g.isCircleDrawn = false;
+    g.isCircleEnded = true;
+
+    drawHelper.redraw();
+  },
 };
 
 arcHandler.init();

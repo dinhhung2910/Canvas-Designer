@@ -1,69 +1,102 @@
-var pencilHandler = {
-    ismousedown: false,
-    prevX: 0,
-    prevY: 0,
-    mousedown: function(e) {
-        var x = e.pageX - canvas.offsetLeft,
-            y = e.pageY - canvas.offsetTop;
+import {
+  clone,
+  tempContext,
+} from './common';
+import DrawHelper from './draw-helper';
+import globalOptions from './global-options';
+import globalObjects from './global-objects';
 
-        var t = this;
+const {points} = globalObjects;
+const canvas = tempContext.canvas;
 
-        t.prevX = x;
-        t.prevY = y;
+const PencilHandler = {
+  ismousedown: false,
+  prevX: 0,
+  prevY: 0,
+  mousedown: function(e) {
+    const x = e.pageX - canvas.offsetLeft;
+    const y = e.pageY - canvas.offsetTop;
 
-        t.ismousedown = true;
+    const t = this;
 
-        // make sure that pencil is drawing shapes even 
-        // if mouse is down but mouse isn't moving
-        tempContext.lineCap = 'round';
-        pencilDrawHelper.pencil(tempContext, [t.prevX, t.prevY, x, y]);
+    t.prevX = x;
+    t.prevY = y;
 
-        points[points.length] = ['pencil', [t.prevX, t.prevY, x, y], pencilDrawHelper.getOptions(), 'start'];
+    t.ismousedown = true;
 
-        t.prevX = x;
-        t.prevY = y;
-    },
-    mouseup: function(e) {
-        var x = e.pageX - canvas.offsetLeft,
-            y = e.pageY - canvas.offsetTop;
+    // make sure that pencil is drawing shapes even
+    // if mouse is down but mouse isn't moving
+    tempContext.lineCap = 'round';
+    pencilDrawHelper.pencil(tempContext, [t.prevX, t.prevY, x, y]);
 
-        var t = this;
+    points[points.length] = [
+      'pencil',
+      [t.prevX, t.prevY, x, y],
+      pencilDrawHelper.getOptions(),
+      'start',
+    ];
 
-        if (t.ismousedown) {
-            tempContext.lineCap = 'round';
-            pencilDrawHelper.pencil(tempContext, [t.prevX, t.prevY, x, y]);
+    t.prevX = x;
+    t.prevY = y;
+  },
+  mouseup: function(e) {
+    const x = e.pageX - canvas.offsetLeft;
+    const y = e.pageY - canvas.offsetTop;
 
-            points[points.length] = ['pencil', [t.prevX, t.prevY, x, y], pencilDrawHelper.getOptions(), 'end'];
+    const t = this;
 
-            t.prevX = x;
-            t.prevY = y;
-        }
+    if (t.ismousedown) {
+      tempContext.lineCap = 'round';
+      pencilDrawHelper.pencil(tempContext, [t.prevX, t.prevY, x, y]);
 
-        this.ismousedown = false;
-    },
-    mousemove: function(e) {
-        var x = e.pageX - canvas.offsetLeft,
-            y = e.pageY - canvas.offsetTop;
+      points[points.length] = [
+        'pencil',
+        [t.prevX, t.prevY, x, y],
+        pencilDrawHelper.getOptions(),
+        'end',
+      ];
 
-        var t = this;
-
-        if (t.ismousedown) {
-            tempContext.lineCap = 'round';
-            pencilDrawHelper.pencil(tempContext, [t.prevX, t.prevY, x, y]);
-
-            points[points.length] = ['pencil', [t.prevX, t.prevY, x, y], pencilDrawHelper.getOptions()];
-
-            t.prevX = x;
-            t.prevY = y;
-        }
+      t.prevX = x;
+      t.prevY = y;
     }
-}
 
-var pencilLineWidth = document.getElementById('pencil-stroke-style').value,
-    pencilStrokeStyle = '#' + document.getElementById('pencil-fill-style').value;
+    this.ismousedown = false;
+  },
+  mousemove: function(e) {
+    const x = e.pageX - canvas.offsetLeft;
+    const y = e.pageY - canvas.offsetTop;
 
-var pencilDrawHelper = clone(drawHelper);
+    const t = this;
+
+    if (t.ismousedown) {
+      tempContext.lineCap = 'round';
+      pencilDrawHelper.pencil(tempContext, [t.prevX, t.prevY, x, y]);
+
+      points[points.length] = [
+        'pencil',
+        [t.prevX, t.prevY, x, y],
+        pencilDrawHelper.getOptions(),
+      ];
+
+      t.prevX = x;
+      t.prevY = y;
+    }
+  },
+};
+
+const pencilDrawHelper = clone(DrawHelper);
 
 pencilDrawHelper.getOptions = function() {
-    return [pencilLineWidth, pencilStrokeStyle, fillStyle, globalAlpha, globalCompositeOperation, lineCap, lineJoin, font];
-}
+  return [
+    globalOptions.pencilLineWidth,
+    globalOptions.pencilStrokeStyle,
+    globalOptions.fillStyle,
+    globalOptions.globalAlpha,
+    globalOptions.globalCompositeOperation,
+    globalOptions.lineCap,
+    globalOptions.lineJoin,
+    globalOptions.font,
+  ];
+};
+
+export default PencilHandler;

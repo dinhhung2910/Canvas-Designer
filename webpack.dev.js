@@ -4,7 +4,7 @@ const { merge } = require("webpack-merge");
 
 module.exports = merge(common, {
   mode: "development",
-  devtool: "none",
+  devtool: 'source-map',
   output: {
     filename: "widget.min.js",
     path: path.resolve(__dirname, "dist")

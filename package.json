@@ -14,7 +14,7 @@
     "url": "https://github.com/muaz-khan/Canvas-Designer.git"
   },
   "scripts": {
-    "start": "webpack-dev-server --config webpack.dev.js --open",
+    "start": "webpack serve --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js"
   },
   "keywords": [
@@ -53,6 +53,7 @@
     "optimize-css-assets-webpack-plugin": "^5.0.4",
     "terser-webpack-plugin": "^5.1.1",
     "webpack": "^5.12.2",
+    "webpack-dev-server": "^3.11.1",
     "webpack-merge": "^5.7.3"
   }
 }

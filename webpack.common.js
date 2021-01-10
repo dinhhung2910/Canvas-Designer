@@ -1,8 +1,8 @@
 const path = require('path');
 
 module.exports = {
-  entry:  [
-    //'./dev/head.js',
+  entry: [
+    // './dev/head.js',
     './dev/common.js',
 
     './dev/draw-helper.js',
@@ -24,13 +24,13 @@ module.exports = {
 
     './dev/data-uris.js',
 
-    './dev/decorator.js',
+    './dev/decorator/index.js',
     './dev/events-handler.js',
 
     './dev/share-drawings.js',
     './dev/webrtc-handler.js',
     './dev/canvas-designer-widget.js',
 
-    //'./dev/tail.js'
-  ]
+    // './dev/tail.js'
+  ],
 };

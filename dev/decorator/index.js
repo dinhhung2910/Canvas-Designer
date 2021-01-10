@@ -5,11 +5,14 @@ import {
   endLastPath,
   find,
   common,
-} from './common';
-import {dataURIs} from './data-uris';
-import DragHelper from './drag-helper';
-import globalOptions from './global-options';
-import TextHandler from './text-handler';
+} from '../common';
+import {dataURIs} from '../data-uris';
+import globalOptions from '../global-options';
+import bindEvent from './bind-event';
+import decoratePencil from './decorate-pencil';
+import setSelection from './set-selection';
+import {getContext} from './utils';
+import hideContainers from './hide-containers';
 
 let tools = {
   line: true,
@@ -45,29 +48,6 @@ if (tools.code === true) {
   document.querySelector('.preview-panel').style.display = 'block';
 }
 
-/**
- *
- * @param {*} element
- * @param {*} prop
- */
-function setSelection(element, prop) {
-  endLastPath();
-  hideContainers();
-
-  is.set(prop);
-
-  const selected = document.getElementsByClassName('selected-shape')[0];
-  if (selected) {
-    selected.className = selected.className.replace(/selected-shape/g, '');
-  }
-
-  if (!element.className) {
-    element.className = '';
-  }
-
-  element.className += ' selected-shape';
-}
-
 /* Default: setting default selected shape!! */
 is.set(window.selectedIcon);
 
@@ -98,146 +78,8 @@ window.addEventListener('load', function() {
 }, false);
 
 (function() {
-  const cache = {};
-
   const lineCapSelect = find('lineCap-select');
   const lineJoinSelect = find('lineJoin-select');
-
-  /**
-   *
-   * @param {*} id
-   * @return {*}
-   */
-  function getContext(id) {
-    const context = find(id).getContext('2d');
-    context.lineWidth = 2;
-    context.strokeStyle = '#6c96c8';
-    return context;
-  }
-
-  /**
-   *
-   * @param {*} context
-   * @param {*} shape
-   */
-  function bindEvent(context, shape) {
-    if (shape === 'Pencil' || shape === 'Marker') {
-      globalOptions.lineCap =
-        globalOptions.lineJoin =
-        'round';
-    }
-
-    addEvent(context.canvas, 'click', function() {
-      // pdfHandler.pdfPageContainer.style.display = 'none';
-
-      if (TextHandler.text.length) {
-        TextHandler.appendPoints();
-      }
-
-      if (shape === 'Text') {
-        TextHandler.onShapeSelected();
-      } else {
-        TextHandler.onShapeUnSelected();
-      }
-
-      if (shape === 'Pencil' || shape === 'Marker') {
-        globalOptions.lineCap =
-        globalOptions.lineJoin =
-        'round';
-      }
-
-      DragHelper.global.startingIndex = 0;
-
-      setSelection(this, shape);
-
-      if (this.id === 'drag-last-path') {
-        find('copy-last').checked = true;
-        find('copy-all').checked = false;
-      } else if (this.id === 'drag-all-paths') {
-        find('copy-all').checked = true;
-        find('copy-last').checked = false;
-      }
-
-      if (this.id === 'image-icon') {
-        const selector = new FileSelector();
-        selector.accept = 'image/*';
-        selector.selectSingleFile(function(file) {
-          if (!file) return;
-
-          const reader = new FileReader();
-          reader.onload = function(event) {
-            const image = new Image();
-            image.onload = function() {
-              const index = imageHandler.images.length;
-
-              imageHandler.lastImageURL = image.src;
-              imageHandler.lastImageIndex = index;
-
-              imageHandler.images.push(image);
-              imageHandler.load(image.clientWidth, image.clientHeight);
-            };
-            image.style =
-                'position: absolute; top: -99999999999; left: -999999999;';
-            document.body.appendChild(image);
-            image.src = event.target.result;
-          };
-          reader.readAsDataURL(file);
-        });
-      }
-
-      if (this.id === 'pdf-icon') {
-        const selector = new FileSelector();
-        selector.selectSingleFile(function(file) {
-          if (!file) return;
-
-          /**
-           *
-           */
-          function onGettingPdf() {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-              pdfHandler.pdf = null; // to make sure we call "getDocument" again
-              pdfHandler.load(event.target.result);
-            };
-            reader.readAsDataURL(file);
-          }
-          onGettingPdf();
-        }, null, 'application/pdf');
-      }
-
-      if (
-        this.id === 'pencil-icon' ||
-        this.id === 'eraser-icon' ||
-        this.id === 'marker-icon'
-      ) {
-        cache.lineCap = globalOptions.lineCap;
-        cache.lineJoin = globalOptions.lineJoin;
-
-        globalOptions.lineCap = globalOptions.lineJoin = 'round';
-      } else if (cache.lineCap && cache.lineJoin) {
-        globalOptions.lineCap = cache.lineCap;
-        globalOptions.lineJoin = cache.lineJoin;
-      }
-
-      if (this.id === 'eraser-icon') {
-        cache.strokeStyle = strokeStyle;
-        cache.fillStyle = fillStyle;
-        cache.lineWidth = lineWidth;
-
-        strokeStyle = 'White';
-        fillStyle = 'White';
-        lineWidth = 10;
-      } else if (
-        cache.strokeStyle &&
-        cache.fillStyle &&
-        typeof cache.lineWidth !== 'undefined'
-      ) {
-        strokeStyle = cache.strokeStyle;
-        fillStyle = cache.fillStyle;
-        lineWidth = cache.lineWidth;
-      }
-    });
-  }
 
   const toolBox = find('tool-box');
   // console.log(toolBox);
@@ -391,114 +233,6 @@ window.addEventListener('load', function() {
     document.getElementById('zoom-down').style.display = 'block';
   }
 
-  /**
-   *
-   */
-  function decoratePencil() {
-    /**
-     *
-     * @param {*} h
-     * @param {*} alpha
-     * @return {*}
-     */
-    function hexToRGBA(h, alpha) {
-      return 'rgba(' + hexToRGB(h).join(',') + ',1)';
-    }
-
-    const colors = [
-      ['FFFFFF', '006600', '000099', 'CC0000', '8C4600'],
-      ['CCCCCC', '00CC00', '6633CC', 'FF0000', 'B28500'],
-      ['666666', '66FFB2', '006DD9', 'FF7373', 'FF9933'],
-      ['333333', '26FF26', '6699FF', 'CC33FF', 'FFCC99'],
-      ['000000', 'CCFF99', 'BFDFFF', 'FFBFBF', 'FFFF33'],
-    ];
-
-    const context = getContext('pencil-icon');
-
-    const image = new Image();
-    image.onload = function() {
-      context.drawImage(image, 4, 4, 32, 32);
-      bindEvent(context, 'Pencil');
-    };
-    image.src = dataURIs.pencil;
-
-    const pencilContainer = find('pencil-container');
-    const pencilColorContainer = find('pencil-fill-colors');
-    const strokeStyleText = find('pencil-stroke-style');
-    const pencilColorsList = find('pencil-colors-list');
-    const fillStyleText = find('pencil-fill-style');
-    const pencilSelectedColor = find('pencil-selected-color');
-    const pencilSelectedColor2 = find('pencil-selected-color-2');
-    const btnPencilDone = find('pencil-done');
-    const canvas = context.canvas;
-    const alpha = 0.2;
-
-    // START INIT PENCIL
-
-
-    globalOptions.pencilStrokeStyle = hexToRGBA(fillStyleText.value, alpha);
-
-    pencilSelectedColor.style.backgroundColor =
-      pencilSelectedColor2.style.backgroundColor = '#' + fillStyleText.value;
-
-    colors.forEach(function(colorRow) {
-      let row = '<tr>';
-
-      colorRow.forEach(function(color) {
-        row += '<td style="background-color:#' + color +
-          '" data-color="' + color + '"></td>';
-      });
-      row += '</tr>';
-
-      pencilColorsList.innerHTML += row;
-    });
-
-    Array.prototype.slice.call(
-      pencilColorsList.getElementsByTagName('td'),
-    ).forEach(function(td) {
-      addEvent(td, 'mouseover', function() {
-        const elColor = td.getAttribute('data-color');
-        pencilSelectedColor2.style.backgroundColor = '#' + elColor;
-        fillStyleText.value = elColor;
-      });
-
-      addEvent(td, 'click', function() {
-        const elColor = td.getAttribute('data-color');
-        pencilSelectedColor.style.backgroundColor =
-                    pencilSelectedColor2.style.backgroundColor = '#' + elColor;
-
-        fillStyleText.value = elColor;
-
-
-        pencilColorContainer.style.display = 'none';
-      });
-    });
-
-    // END INIT PENCIL
-
-    addEvent(canvas, 'click', function() {
-      hideContainers();
-
-      pencilContainer.style.display = 'block';
-      pencilContainer.style.top = (canvas.offsetTop + 1) + 'px';
-      pencilContainer.style.left =
-        (canvas.offsetLeft + canvas.clientWidth) + 'px';
-
-      fillStyleText.focus();
-    });
-
-    addEvent(btnPencilDone, 'click', function() {
-      pencilContainer.style.display = 'none';
-      pencilColorContainer.style.display = 'none';
-
-      pencilLineWidth = strokeStyleText.value;
-      pencilStrokeStyle = hexToRGBA(fillStyleText.value, alpha);
-    });
-
-    addEvent(pencilSelectedColor, 'click', function() {
-      pencilColorContainer.style.display = 'block';
-    });
-  }
 
   if (tools.pencil === true) {
     decoratePencil();
@@ -998,27 +732,6 @@ window.addEventListener('load', function() {
   addEvent(isShorten, 'change', common.updateTextArea);
   addEvent(isAbsolute, 'change', common.updateTextArea);
 })();
-
-/**
- *
- */
-function hideContainers() {
-  const additionalContainer = find('additional-container');
-  const colorsContainer = find('colors-container');
-  const markerContainer = find('marker-container');
-  const markerColorContainer = find('marker-fill-colors');
-  const pencilContainer = find('pencil-container');
-  const pencilColorContainer = find('pencil-fill-colors');
-  const lineWidthContainer = find('line-width-container');
-
-  additionalContainer.style.display =
-        colorsContainer.style.display =
-        markerColorContainer.style.display =
-        markerContainer.style.display =
-        pencilColorContainer.style.display =
-        pencilContainer.style.display =
-        lineWidthContainer.style.display = 'none';
-}
 
 /**
  *

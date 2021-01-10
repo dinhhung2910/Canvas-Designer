@@ -84,15 +84,11 @@ const PencilHandler = {
   },
 };
 
-const pencilLineWidth = document.getElementById('pencil-stroke-style').value;
-globalOptions.pencilStrokeStyle = '#' +
-  document.getElementById('pencil-fill-style').value;
-
 const pencilDrawHelper = clone(DrawHelper);
 
 pencilDrawHelper.getOptions = function() {
   return [
-    pencilLineWidth,
+    globalOptions.pencilLineWidth,
     globalOptions.pencilStrokeStyle,
     globalOptions.fillStyle,
     globalOptions.globalAlpha,

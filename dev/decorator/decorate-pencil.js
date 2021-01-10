@@ -56,11 +56,13 @@ function decoratePencil(options) {
   fillStyleText.value = strokeStyle.includes('rgb') ?
     RGBA2hex(strokeStyle) :
     strokeStyle;
+  saveOptions(globalOptions);
 
   // START INIT PENCIL
 
 
   globalOptions.pencilStrokeStyle = hexToRGBA(fillStyleText.value, alpha);
+  globalOptions.pencilLineWidth = strokeStyleText.value;
 
   pencilSelectedColor.style.backgroundColor =
       pencilSelectedColor2.style.backgroundColor = '#' + fillStyleText.value;

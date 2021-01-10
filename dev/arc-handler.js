@@ -1,3 +1,6 @@
+import {addEvent, find} from './common';
+import globalOptions from './global-options';
+
 const arcHandler = {
   global: {
     ismousedown: false,

@@ -1,3 +1,8 @@
+import DrawHelper from './draw-helper';
+import globalObjects from './global-objects';
+import globalOptions from './global-options';
+import TextHandler from './text-handler';
+
 const is = {
   isLine: false,
   isArrow: false,
@@ -71,16 +76,9 @@ function find(selector) {
   return document.getElementById(selector);
 }
 
-let points = [];
 const textarea = find('code-text');
 const lineWidth = 2;
 const strokeStyle = '#6c96c8';
-const fillStyle = 'rgba(0,0,0,0)';
-const globalAlpha = 1;
-const globalCompositeOperation = 'source-over';
-const lineCap = 'round';
-const font = '15px "Arial"';
-const lineJoin = 'round';
 
 /**
  *
@@ -96,8 +94,8 @@ function getContext(id) {
 
   ctx.lineWidth = lineWidth;
   ctx.strokeStyle = strokeStyle;
-  ctx.fillStyle = fillStyle;
-  ctx.font = font;
+  ctx.fillStyle = globalOptions.fillStyle;
+  ctx.font = globalOptions.font;
 
   return ctx;
 }
@@ -673,6 +671,9 @@ function drawArrow(mx, my, lx, ly, options) {
   handleOptions();
 }
 
+/**
+ *
+ */
 function endLastPath() {
   const cache = is;
 
@@ -680,17 +681,16 @@ function endLastPath() {
   else if (cache.isQuadraticCurve) quadraticHandler.end();
   else if (cache.isBezierCurve) bezierHandler.end();
 
-  drawHelper.redraw();
+  DrawHelper.redraw();
 
-  if (textHandler.text && textHandler.text.length) {
-    textHandler.appendPoints();
-    textHandler.onShapeUnSelected();
+  if (TextHandler.text && TextHandler.text.length) {
+    TextHandler.appendPoints();
+    TextHandler.onShapeUnSelected();
   }
-  textHandler.showOrHideTextTools('hide');
+  TextHandler.showOrHideTextTools('hide');
 }
 
 let copiedStuff = [];
-let isControlKeyPressed;
 
 function copy() {
   endLastPath();
@@ -706,6 +706,9 @@ function copy() {
   }
 }
 
+/**
+ *
+ */
 function paste() {
   endLastPath();
 
@@ -724,7 +727,7 @@ function paste() {
     setSelection(find('drag-last-path'), 'DragLastPath');
   } else {
     dragHelper.global.startingIndex = points.length;
-    points = points.concat(copiedStuff);
+    globalObjects.points = points.concat(copiedStuff);
     setSelection(find('drag-all-paths'), 'DragAllPaths');
   }
 }
@@ -746,16 +749,22 @@ function cutHex(h) {
   return (h.charAt(0) == '#') ? h.substring(1, 7) : h;
 }
 
+/**
+ * Clone object
+ * @param {*} obj
+ * @return {*} Cloned object
+ */
 function clone(obj) {
   if (obj === null || typeof(obj) !== 'object' || 'isActiveClone' in obj) {
     return obj;
   }
+  let temp = null;
 
   if (obj instanceof Date) {
-    var temp = new obj.constructor();
-  } // or new Date(obj);
-  else {
-    var temp = obj.constructor();
+    // or new Date(obj);
+    temp = new obj.constructor();
+  } else {
+    temp = obj.constructor();
   }
 
   for (const key in obj) {
@@ -769,6 +778,11 @@ function clone(obj) {
   return temp;
 }
 
+/**
+ *
+ * @param {String} h Hex code
+ * @return {String} RGB code
+ */
 function hexToRGB(h) {
   return [
     hexToR(h),
@@ -776,3 +790,15 @@ function hexToRGB(h) {
     hexToB(h),
   ];
 }
+
+export {
+  clone,
+  addEvent,
+  find,
+  is,
+  endLastPath,
+  hexToRGB,
+  tempContext,
+  context,
+  common,
+};

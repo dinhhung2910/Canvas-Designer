@@ -791,6 +791,43 @@ function hexToRGB(h) {
   ];
 }
 
+/**
+ *
+ * @param {*} h
+ * @param {*} alpha
+ * @return {*}
+ */
+function hexToRGBA(h, alpha) {
+  return 'rgba(' + hexToRGB(h).join(',') + ',1)';
+}
+
+/**
+ *
+ * @param {String} orig rgba color code
+ */
+function RGBA2hex(orig) {
+  let a; let isPercent;
+  const rgb = orig.
+    replace(/\s/g, '').
+    match(/^rgba?\((\d+),(\d+),(\d+),?([^,\s)]+)?/i);
+  const alpha = (rgb && rgb[4] || '').trim();
+  let hex = rgb ?
+    (rgb[1] | 1 << 8).toString(16).slice(1) +
+    (rgb[2] | 1 << 8).toString(16).slice(1) +
+    (rgb[3] | 1 << 8).toString(16).slice(1) : orig;
+
+  if (alpha !== '') {
+    a = alpha;
+  } else {
+    a = 1;
+  }
+  // multiply before convert to HEX
+  a = ((a * 255) | 1 << 8).toString(16).slice(1);
+  hex = hex + a;
+
+  return hex;
+}
+
 export {
   clone,
   addEvent,
@@ -798,6 +835,8 @@ export {
   is,
   endLastPath,
   hexToRGB,
+  hexToRGBA,
+  RGBA2hex,
   tempContext,
   context,
   common,

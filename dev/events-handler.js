@@ -8,6 +8,7 @@ import globalObjects from './global-objects';
 import PencilHandler from './pencil-handler';
 import DrawHelper from './draw-helper';
 import {syncPoints} from './share-drawings';
+import hideContainers from './decorator/hide-containers';
 
 const {points} = globalObjects;
 const canvas = tempContext.canvas;
@@ -40,6 +41,8 @@ addEvent(canvas, isTouch ? 'touchstart mousedown' : 'mousedown', function(e) {
 
   !cache.isPdf && DrawHelper.redraw();
 
+  // Hide all option boxes
+  hideContainers();
   preventStopEvent(e);
 });
 

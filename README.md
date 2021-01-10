@@ -1,4 +1,33 @@
-# [Canvas Designer](https://github.com/muaz-khan/Canvas-Designer) / [API Referencee](https://github.com/muaz-khan/Canvas-Designer#api-reference)
+# [Canvas Designer Forked](https://github.com/dinhhung2910/Canvas-Designer) 
+
+
+[![npm](https://img.shields.io/npm/v/canvas-designer.svg)](https://npmjs.org/package/canvas-designer) [![Build Status: Linux](https://travis-ci.org/muaz-khan/Canvas-Designer.png?branch=master)](https://travis-ci.org/muaz-khan/Canvas-Designer)
+
+> "Collaborative" [Canvas Designer](https://github.com/muaz-khan/Canvas-Designer) i.e. Canvas-Drawing tool allows you draw bezier/quadratic curves, rectangles, circles and lines. You can also set strokes, back/forth colors and much more. You can draw using pencils, erase drawing, type texts etc. You can [easily add your own tools](https://www.webrtc-experiment.com/Canvas-Designer/Help/#contribute)
+
+This project is an improved version of Muaz Khan's original [project](https://github.com/muaz-khan/Canvas-Designer/releases).
+Some improvement I'm working in:
+
+- ✅ Webpack 5 & ES6 compatible.
+
+- ✅ Support mobile devices, tablets,...
+
+- ✅ Fix existed bugs in zooming.
+
+- ⬜️ And more.
+
+Feel free to use and contribute.
+
+## Development
+
+* Run `npm start` to start webpack server. 
+A debug-friendly version of file is served at `localhost:8080/widget.min.js`.
+
+* Open html files with `widgetJsURL` param points to your js file.
+For example: 
+```
+http://localhost:8000/widget.html?widgetJsURL=http://localhost:8080/widget.min.js
+```
 
 ## Demo: https://www.webrtc-experiment.com/Canvas-Designer/
 
@@ -9,20 +38,17 @@ Multiple designers demo: https://www.webrtc-experiment.com/Canvas-Designer/multi
 ### YouTube video:
 
 * https://www.youtube.com/watch?v=pvAj5l_v3cM
-
-[![npm](https://img.shields.io/npm/v/canvas-designer.svg)](https://npmjs.org/package/canvas-designer) [![downloads](https://img.shields.io/npm/dm/canvas-designer.svg)](https://npmjs.org/package/canvas-designer) [![Build Status: Linux](https://travis-ci.org/muaz-khan/Canvas-Designer.png?branch=master)](https://travis-ci.org/muaz-khan/Canvas-Designer)
-
-> "Collaborative" [Canvas Designer](https://github.com/muaz-khan/Canvas-Designer) i.e. Canvas-Drawing tool allows you draw bezier/quadratic curves, rectangles, circles and lines. You can also set strokes, back/forth colors and much more. You can draw using pencils, erase drawing, type texts etc. You can [easily add your own tools](https://www.webrtc-experiment.com/Canvas-Designer/Help/#contribute).
+.
 
 **You can check all releases here:**
 
-* https://github.com/muaz-khan/Canvas-Designer/releases
+* https://github.com/dinhhung2910/Canvas-Designer/releases
 
 The specialty of this drawing-tool is that, it generates Canvas2D code for you; so simply draw and get the code! That code can be used in any javascript Canvas2D application.
 
 **You can submit issues here:**
 
-* https://github.com/muaz-khan/Canvas-Designer/issues
+* https://github.com/dinhhung2910/Canvas-Designer/issues
 
 Also, you can collaborate your drawing with up to 15 users; and everything is synced from all users. So, if you draw a line and your friend-A draws quadratic curve and friend-B draws rectangle then everything will be synced among all users!
 

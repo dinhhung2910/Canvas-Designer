@@ -26,6 +26,16 @@ export function isEventContainDOM(event, id) {
         contain = true;
       }
     });
+  } else {
+    let target = event.target;
+    while (target.parentElement) {
+      if (target.id == id) {
+        contain = true;
+        break;
+      } else {
+        target = target.parentElement;
+      }
+    }
   }
   return contain;
 }

@@ -14,8 +14,15 @@ const {points} = globalObjects;
 const canvas = tempContext.canvas;
 const isTouch = 'createTouch' in document || 'ontouchstart' in window;
 
-addEvent(canvas, isTouch ? 'touchstart mousedown' : 'mousedown', function(e) {
+
+addEvent(canvas, isTouch ? 'touchstart' : 'mousedown', function(e) {
+  let isMultiTouch = false;
+
   if (isTouch) {
+    if (e.touches && e.touches.length > 1) {
+      isMultiTouch = true;
+    }
+
     e = e.pageX ? e : e.touches.length ? e.touches[0] : {
       pageX: 0,
       pageY: 0,
@@ -31,8 +38,13 @@ addEvent(canvas, isTouch ? 'touchstart mousedown' : 'mousedown', function(e) {
   else if (cache.isBezierCurve) bezierHandler.mousedown(e);
   else if (cache.isDragLastPath || cache.isDragAllPaths) {
     dragHelper.mousedown(e);
-  } else if (cache.isPencil) PencilHandler.mousedown(e);
-  else if (cache.isEraser) eraserHandler.mousedown(e);
+  } else if (cache.isPencil) {
+    if (isMultiTouch) {
+      PencilHandler.cancelMousedown();
+    } else {
+      PencilHandler.mousedown(e);
+    }
+  } else if (cache.isEraser) eraserHandler.mousedown(e);
   else if (cache.isText) textHandler.mousedown(e);
   else if (cache.isImage) imageHandler.mousedown(e);
   else if (cache.isPdf) pdfHandler.mousedown(e);
@@ -67,6 +79,14 @@ function preventStopEvent(e) {
 addEvent(
   canvas, isTouch ? 'touchend touchcancel mouseup' : 'mouseup',
   function(e) {
+    let isMultiTouch = false;
+
+    if (isTouch) {
+      if (e.touches && e.touches.length > 1) {
+        isMultiTouch = true;
+      }
+    }
+
     if (isTouch && (!e || !('pageX' in e))) {
       if (e && e.touches && e.touches.length) {
         e = e.touches[0];
@@ -89,7 +109,7 @@ addEvent(
     else if (cache.isBezierCurve) bezierHandler.mouseup(e);
     else if (cache.isDragLastPath || cache.isDragAllPaths) {
       dragHelper.mouseup(e);
-    } else if (cache.isPencil) PencilHandler.mouseup(e);
+    } else if (cache.isPencil && !isMultiTouch) PencilHandler.mouseup(e);
     else if (cache.isEraser) eraserHandler.mouseup(e);
     else if (cache.isText) textHandler.mouseup(e);
     else if (cache.isImage) imageHandler.mouseup(e);
@@ -105,7 +125,13 @@ addEvent(
   });
 
 addEvent(canvas, isTouch ? 'touchmove mousemove' : 'mousemove', function(e) {
+  let isMultiTouch = false;
+
   if (isTouch) {
+    if (e.touches && e.touches.length > 1) {
+      isMultiTouch = true;
+    }
+
     e = e.pageX ? e : e.touches.length ? e.touches[0] : {
       pageX: 0,
       pageY: 0,
@@ -121,7 +147,7 @@ addEvent(canvas, isTouch ? 'touchmove mousemove' : 'mousemove', function(e) {
   else if (cache.isBezierCurve) bezierHandler.mousemove(e);
   else if (cache.isDragLastPath || cache.isDragAllPaths) {
     dragHelper.mousemove(e);
-  } else if (cache.isPencil) PencilHandler.mousemove(e);
+  } else if (cache.isPencil && !isMultiTouch) PencilHandler.mousemove(e);
   else if (cache.isEraser) eraserHandler.mousemove(e);
   else if (cache.isText) textHandler.mousemove(e);
   else if (cache.isImage) imageHandler.mousemove(e);

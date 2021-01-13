@@ -3,6 +3,7 @@ import {
   context,
 } from './common';
 import DrawHelper from './draw-helper';
+import {options} from './constants';
 
 const ZoomHandler = {
   scale: 1.0,
@@ -20,9 +21,20 @@ const ZoomHandler = {
     this.apply();
   },
   apply: function() {
-    tempContext.scale(this.scale, this.scale);
-    context.scale(this.scale, this.scale);
+    // tempContext.scale(this.scale, this.scale);
+    // context.scale(this.scale, this.scale);
     DrawHelper.redraw();
+  },
+  applyTemp: function(e) {
+    // tempContext.scale(e, e);
+    // context.scale(e, e);
+    DrawHelper.redraw();
+  },
+  multiply: function(e) {
+    this.scale *= e;
+    this.scale = Math.max(this.scale, options.MIN_SCALE);
+    this.scale = Math.min(this.scale, options.MAX_SCALE);
+    this.apply();
   },
   icons: {
     up: function(ctx) {

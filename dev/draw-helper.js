@@ -3,6 +3,7 @@ import {
   context,
 } from './common';
 import globalObjects from './global-objects';
+import ZoomHandler from './zoom-handler';
 
 const points = globalObjects.points;
 
@@ -11,15 +12,35 @@ const DrawHelper = {
     tempContext.clearRect(0, 0, innerWidth, innerHeight);
     context.clearRect(0, 0, innerWidth, innerHeight);
 
+    // Get scale
+    const scale = ZoomHandler.scale;
+    console.log('Redrawing with scale', scale);
+
     let i; let point; const length = points.length;
     for (i = 0; i < length; i++) {
       point = points[i];
-      // point[0] != 'pdf' &&
+
       if (point && point.length && this[point[0]]) {
-        this[point[0]](context, point[1], point[2]);
+        this[point[0]](
+          context,
+          ...this.getPropertiesWithScale(point[1], point[2]));
       }
       // else warn
     }
+  },
+  getPropertiesWithScale: function(coor, opt) {
+    const scale = ZoomHandler.scale;
+    let scaledOpt = null;
+    const scaledCoor = coor.map((en) => en * scale);
+
+    if (Array.isArray(opt)) {
+      scaledOpt = opt.map((en) => en);
+      scaledOpt[0] = parseFloat(scaledOpt[0]) * scale;
+    } else {
+      scaledOpt = opt;
+    }
+
+    return [scaledCoor, scaledOpt];
   },
   getOptions: function(opt) {
     opt = opt || {};
@@ -35,7 +56,7 @@ const DrawHelper = {
     ];
   },
   handleOptions: function(context, opt, isNoFillStroke) {
-    opt = opt || this.getOptions();
+    opt = opt || this.getPropertiesWithScale([], this.getOptions())[1];
 
     context.globalAlpha = opt[3];
     context.globalCompositeOperation = opt[4];

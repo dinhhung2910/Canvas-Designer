@@ -9,11 +9,30 @@ import PencilHandler from './pencil-handler';
 import DrawHelper from './draw-helper';
 import {syncPoints} from './share-drawings';
 import hideContainers from './decorator/hide-containers';
+import * as Hammer from 'hammerjs';
+import ZoomHandler from './zoom-handler';
 
 const {points} = globalObjects;
 const canvas = tempContext.canvas;
 const isTouch = 'createTouch' in document || 'ontouchstart' in window;
 
+/** Handle zoom event */
+if (isTouch) {
+  const mc = new Hammer.Manager(canvas);
+  const Pinch = new Hammer.Pinch();
+  mc.add(Pinch);
+
+  mc.on('pinch', function(e) {
+    const x = Math.log10(e.scale) + 1;
+    console.log(x);
+    ZoomHandler.applyTemp(x * ZoomHandler.scale);
+  });
+
+  mc.on('pinchend', function(e) {
+    const x = Math.log10(e.scale) + 1;
+    ZoomHandler.multiply(x);
+  });
+}
 
 addEvent(canvas, isTouch ? 'touchstart' : 'mousedown', function(e) {
   let isMultiTouch = false;
@@ -30,6 +49,11 @@ addEvent(canvas, isTouch ? 'touchstart' : 'mousedown', function(e) {
   }
 
   const cache = is;
+  // apply scale
+  e = {
+    pageX: e.pageX / ZoomHandler.scale,
+    pageY: e.pageY / ZoomHandler.scale,
+  };
 
   if (cache.isLine) lineHandler.mousedown(e);
   else if (cache.isArc) arcHandler.mousedown(e);
@@ -101,6 +125,11 @@ addEvent(
     }
 
     const cache = is;
+    // apply scale
+    e = {
+      pageX: e.pageX / ZoomHandler.scale,
+      pageY: e.pageY / ZoomHandler.scale,
+    };
 
     if (cache.isLine) lineHandler.mouseup(e);
     else if (cache.isArc) arcHandler.mouseup(e);
@@ -139,6 +168,11 @@ addEvent(canvas, isTouch ? 'touchmove mousemove' : 'mousemove', function(e) {
   }
 
   const cache = is;
+  // apply scale
+  e = {
+    pageX: e.pageX / ZoomHandler.scale,
+    pageY: e.pageY / ZoomHandler.scale,
+  };
 
   if (cache.isLine) lineHandler.mousemove(e);
   else if (cache.isArc) arcHandler.mousemove(e);

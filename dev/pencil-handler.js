@@ -27,7 +27,10 @@ const PencilHandler = {
     // make sure that pencil is drawing shapes even
     // if mouse is down but mouse isn't moving
     tempContext.lineCap = 'round';
-    pencilDrawHelper.pencil(tempContext, [t.prevX, t.prevY, x, y]);
+    pencilDrawHelper.pencil(
+      tempContext,
+      ...DrawHelper.getPropertiesWithScale([t.prevX, t.prevY, x, y]),
+    );
 
     points[points.length] = [
       'pencil',
@@ -57,7 +60,10 @@ const PencilHandler = {
 
     if (t.ismousedown) {
       tempContext.lineCap = 'round';
-      pencilDrawHelper.pencil(tempContext, [t.prevX, t.prevY, x, y]);
+      pencilDrawHelper.pencil(
+        tempContext,
+        ...DrawHelper.getPropertiesWithScale([t.prevX, t.prevY, x, y]),
+      );
 
       points[points.length] = [
         'pencil',
@@ -80,7 +86,10 @@ const PencilHandler = {
 
     if (t.ismousedown) {
       tempContext.lineCap = 'round';
-      pencilDrawHelper.pencil(tempContext, [t.prevX, t.prevY, x, y]);
+      pencilDrawHelper.pencil(
+        tempContext,
+        ...DrawHelper.getPropertiesWithScale([t.prevX, t.prevY, x, y]),
+      );
 
       points[points.length] = [
         'pencil',

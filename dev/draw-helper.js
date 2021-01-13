@@ -8,13 +8,12 @@ import ZoomHandler from './zoom-handler';
 const points = globalObjects.points;
 
 const DrawHelper = {
-  redraw: function() {
+  redraw: function(scale) {
     tempContext.clearRect(0, 0, innerWidth, innerHeight);
     context.clearRect(0, 0, innerWidth, innerHeight);
 
     // Get scale
-    const scale = ZoomHandler.scale;
-    console.log('Redrawing with scale', scale);
+    scale = scale || ZoomHandler.scale;
 
     let i; let point; const length = points.length;
     for (i = 0; i < length; i++) {
@@ -23,13 +22,13 @@ const DrawHelper = {
       if (point && point.length && this[point[0]]) {
         this[point[0]](
           context,
-          ...this.getPropertiesWithScale(point[1], point[2]));
+          ...this.getPropertiesWithScale(point[1], point[2], scale));
       }
       // else warn
     }
   },
-  getPropertiesWithScale: function(coor, opt) {
-    const scale = ZoomHandler.scale;
+  getPropertiesWithScale: function(coor, opt, scale) {
+    scale = scale || ZoomHandler.scale;
     let scaledOpt = null;
     const scaledCoor = coor.map((en) => en * scale);
 

@@ -1,7 +1,3 @@
-import {
-  tempContext,
-  context,
-} from './common';
 import DrawHelper from './draw-helper';
 import {options} from './constants';
 
@@ -25,10 +21,10 @@ const ZoomHandler = {
     // context.scale(this.scale, this.scale);
     DrawHelper.redraw();
   },
-  applyTemp: function(e) {
+  applyTemp: function(s) {
     // tempContext.scale(e, e);
     // context.scale(e, e);
-    DrawHelper.redraw();
+    DrawHelper.redraw(s);
   },
   multiply: function(e) {
     this.scale *= e;

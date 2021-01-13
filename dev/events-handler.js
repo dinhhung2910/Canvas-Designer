@@ -24,7 +24,6 @@ if (isTouch) {
 
   mc.on('pinch', function(e) {
     const x = Math.log10(e.scale) + 1;
-    console.log(x);
     ZoomHandler.applyTemp(x * ZoomHandler.scale);
   });
 

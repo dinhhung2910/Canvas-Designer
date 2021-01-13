@@ -10,6 +10,7 @@ module.exports = {
     'ecmaVersion': 12,
     'sourceType': 'module',
   },
+  'ignorePatterns': ['dist/*', 'widget*.js', 'webpack*.js'],
   'rules': {
     'babel/new-cap': 0,
     'new-cap': [0, {'newIsCap': false, 'capIsNew': false}],

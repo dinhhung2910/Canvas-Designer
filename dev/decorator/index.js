@@ -13,6 +13,7 @@ import decoratePencil from './decorate-pencil';
 import setSelection from './set-selection';
 import {getContext} from './utils';
 import hideContainers from './hide-containers';
+import ZoomHandler from '../zoom-handler';
 
 let tools = {
   line: true,
@@ -196,9 +197,9 @@ window.addEventListener('load', function() {
    */
   function decoreZoomUp() {
     const context = getContext('zoom-up');
-    // zoomHandler.icons.up(context);
+    // ZoomHandler.icons.up(context);
     addEvent(context.canvas, 'click', function() {
-      zoomHandler.up();
+      ZoomHandler.up();
     });
 
     const image = new Image();
@@ -213,9 +214,9 @@ window.addEventListener('load', function() {
    */
   function decoreZoomDown() {
     const context = getContext('zoom-down');
-    // zoomHandler.icons.down(context);
+    // ZoomHandler.icons.down(context);
     addEvent(context.canvas, 'click', function() {
-      zoomHandler.down();
+      ZoomHandler.down();
     });
 
     const image = new Image();

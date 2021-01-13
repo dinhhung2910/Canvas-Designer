@@ -14,7 +14,7 @@
     "url": "https://github.com/muaz-khan/Canvas-Designer.git"
   },
   "scripts": {
-    "start": "webpack serve --config webpack.dev.js",
+    "start": "webpack serve --config webpack.dev.js --host 0.0.0.0",
     "build": "webpack --config webpack.prod.js"
   },
   "keywords": [
@@ -50,6 +50,7 @@
   },
   "dependencies": {
     "clean-webpack-plugin": "^3.0.0",
+    "hammerjs": "^2.0.8",
     "html-webpack-plugin": "^4.5.1",
     "mini-css-extract-plugin": "^1.3.3",
     "optimize-css-assets-webpack-plugin": "^5.0.4",

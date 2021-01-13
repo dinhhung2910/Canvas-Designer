@@ -9,13 +9,38 @@ import PencilHandler from './pencil-handler';
 import DrawHelper from './draw-helper';
 import {syncPoints} from './share-drawings';
 import hideContainers from './decorator/hide-containers';
+import * as Hammer from 'hammerjs';
+import ZoomHandler from './zoom-handler';
 
 const {points} = globalObjects;
 const canvas = tempContext.canvas;
 const isTouch = 'createTouch' in document || 'ontouchstart' in window;
 
-addEvent(canvas, isTouch ? 'touchstart mousedown' : 'mousedown', function(e) {
+/** Handle zoom event */
+if (isTouch) {
+  const mc = new Hammer.Manager(canvas);
+  const Pinch = new Hammer.Pinch();
+  mc.add(Pinch);
+
+  mc.on('pinch', function(e) {
+    const x = Math.log10(e.scale) + 1;
+    ZoomHandler.applyTemp(x * ZoomHandler.scale);
+  });
+
+  mc.on('pinchend', function(e) {
+    const x = Math.log10(e.scale) + 1;
+    ZoomHandler.multiply(x);
+  });
+}
+
+addEvent(canvas, isTouch ? 'touchstart' : 'mousedown', function(e) {
+  let isMultiTouch = false;
+
   if (isTouch) {
+    if (e.touches && e.touches.length > 1) {
+      isMultiTouch = true;
+    }
+
     e = e.pageX ? e : e.touches.length ? e.touches[0] : {
       pageX: 0,
       pageY: 0,
@@ -23,6 +48,11 @@ addEvent(canvas, isTouch ? 'touchstart mousedown' : 'mousedown', function(e) {
   }
 
   const cache = is;
+  // apply scale
+  e = {
+    pageX: e.pageX / ZoomHandler.scale,
+    pageY: e.pageY / ZoomHandler.scale,
+  };
 
   if (cache.isLine) lineHandler.mousedown(e);
   else if (cache.isArc) arcHandler.mousedown(e);
@@ -31,8 +61,13 @@ addEvent(canvas, isTouch ? 'touchstart mousedown' : 'mousedown', function(e) {
   else if (cache.isBezierCurve) bezierHandler.mousedown(e);
   else if (cache.isDragLastPath || cache.isDragAllPaths) {
     dragHelper.mousedown(e);
-  } else if (cache.isPencil) PencilHandler.mousedown(e);
-  else if (cache.isEraser) eraserHandler.mousedown(e);
+  } else if (cache.isPencil) {
+    if (isMultiTouch) {
+      PencilHandler.cancelMousedown();
+    } else {
+      PencilHandler.mousedown(e);
+    }
+  } else if (cache.isEraser) eraserHandler.mousedown(e);
   else if (cache.isText) textHandler.mousedown(e);
   else if (cache.isImage) imageHandler.mousedown(e);
   else if (cache.isPdf) pdfHandler.mousedown(e);
@@ -67,6 +102,14 @@ function preventStopEvent(e) {
 addEvent(
   canvas, isTouch ? 'touchend touchcancel mouseup' : 'mouseup',
   function(e) {
+    let isMultiTouch = false;
+
+    if (isTouch) {
+      if (e.touches && e.touches.length > 1) {
+        isMultiTouch = true;
+      }
+    }
+
     if (isTouch && (!e || !('pageX' in e))) {
       if (e && e.touches && e.touches.length) {
         e = e.touches[0];
@@ -81,6 +124,11 @@ addEvent(
     }
 
     const cache = is;
+    // apply scale
+    e = {
+      pageX: e.pageX / ZoomHandler.scale,
+      pageY: e.pageY / ZoomHandler.scale,
+    };
 
     if (cache.isLine) lineHandler.mouseup(e);
     else if (cache.isArc) arcHandler.mouseup(e);
@@ -89,7 +137,7 @@ addEvent(
     else if (cache.isBezierCurve) bezierHandler.mouseup(e);
     else if (cache.isDragLastPath || cache.isDragAllPaths) {
       dragHelper.mouseup(e);
-    } else if (cache.isPencil) PencilHandler.mouseup(e);
+    } else if (cache.isPencil && !isMultiTouch) PencilHandler.mouseup(e);
     else if (cache.isEraser) eraserHandler.mouseup(e);
     else if (cache.isText) textHandler.mouseup(e);
     else if (cache.isImage) imageHandler.mouseup(e);
@@ -105,7 +153,13 @@ addEvent(
   });
 
 addEvent(canvas, isTouch ? 'touchmove mousemove' : 'mousemove', function(e) {
+  let isMultiTouch = false;
+
   if (isTouch) {
+    if (e.touches && e.touches.length > 1) {
+      isMultiTouch = true;
+    }
+
     e = e.pageX ? e : e.touches.length ? e.touches[0] : {
       pageX: 0,
       pageY: 0,
@@ -113,6 +167,11 @@ addEvent(canvas, isTouch ? 'touchmove mousemove' : 'mousemove', function(e) {
   }
 
   const cache = is;
+  // apply scale
+  e = {
+    pageX: e.pageX / ZoomHandler.scale,
+    pageY: e.pageY / ZoomHandler.scale,
+  };
 
   if (cache.isLine) lineHandler.mousemove(e);
   else if (cache.isArc) arcHandler.mousemove(e);
@@ -121,7 +180,7 @@ addEvent(canvas, isTouch ? 'touchmove mousemove' : 'mousemove', function(e) {
   else if (cache.isBezierCurve) bezierHandler.mousemove(e);
   else if (cache.isDragLastPath || cache.isDragAllPaths) {
     dragHelper.mousemove(e);
-  } else if (cache.isPencil) PencilHandler.mousemove(e);
+  } else if (cache.isPencil && !isMultiTouch) PencilHandler.mousemove(e);
   else if (cache.isEraser) eraserHandler.mousemove(e);
   else if (cache.isText) textHandler.mousemove(e);
   else if (cache.isImage) imageHandler.mousemove(e);

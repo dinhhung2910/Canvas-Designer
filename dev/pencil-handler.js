@@ -27,7 +27,10 @@ const PencilHandler = {
     // make sure that pencil is drawing shapes even
     // if mouse is down but mouse isn't moving
     tempContext.lineCap = 'round';
-    pencilDrawHelper.pencil(tempContext, [t.prevX, t.prevY, x, y]);
+    pencilDrawHelper.pencil(
+      tempContext,
+      ...DrawHelper.getPropertiesWithScale([t.prevX, t.prevY, x, y]),
+    );
 
     points[points.length] = [
       'pencil',
@@ -39,6 +42,16 @@ const PencilHandler = {
     t.prevX = x;
     t.prevY = y;
   },
+  /**
+   * Use in touchable devices
+   * When user touch with 2 fingers
+   * First event will be fired with 1 finger
+   * Next event will be fired with both finger
+   */
+  cancelMousedown: function() {
+    points.pop();
+    this.ismousedown = false;
+  },
   mouseup: function(e) {
     const x = e.pageX - canvas.offsetLeft;
     const y = e.pageY - canvas.offsetTop;
@@ -47,7 +60,10 @@ const PencilHandler = {
 
     if (t.ismousedown) {
       tempContext.lineCap = 'round';
-      pencilDrawHelper.pencil(tempContext, [t.prevX, t.prevY, x, y]);
+      pencilDrawHelper.pencil(
+        tempContext,
+        ...DrawHelper.getPropertiesWithScale([t.prevX, t.prevY, x, y]),
+      );
 
       points[points.length] = [
         'pencil',
@@ -70,7 +86,10 @@ const PencilHandler = {
 
     if (t.ismousedown) {
       tempContext.lineCap = 'round';
-      pencilDrawHelper.pencil(tempContext, [t.prevX, t.prevY, x, y]);
+      pencilDrawHelper.pencil(
+        tempContext,
+        ...DrawHelper.getPropertiesWithScale([t.prevX, t.prevY, x, y]),
+      );
 
       points[points.length] = [
         'pencil',

@@ -29,6 +29,8 @@ For example:
 http://localhost:8000/widget.html?widgetJsURL=http://localhost:8080/widget.min.js
 ```
 
+## Demo widget: http://kaito-bk.com/canvas-designer/dist/widget.html
+
 ## Demo: https://www.webrtc-experiment.com/Canvas-Designer/
 
 ## Advance Demo: [demos/dashboard/](https://rtcmulticonnection.herokuapp.com/demos/dashboard/)

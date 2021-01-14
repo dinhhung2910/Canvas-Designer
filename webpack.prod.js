@@ -26,5 +26,13 @@ module.exports = merge(common, {
     new CleanWebpackPlugin({
       filename: '[name].[contentHash].css',
     }),
+    new HtmlWebpackPlugin({
+      template: './widget.html',
+      filename: 'widget.html'
+    }),
+    new HtmlWebpackPlugin({
+      template: './index.html',
+      filename: 'index.html'
+    })
   ],
 });

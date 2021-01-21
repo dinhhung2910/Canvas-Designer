@@ -6,7 +6,6 @@ import DrawHelper from './draw-helper';
 import globalOptions from './global-options';
 import globalObjects from './global-objects';
 
-const {points} = globalObjects;
 const canvas = tempContext.canvas;
 
 const PencilHandler = {
@@ -14,6 +13,7 @@ const PencilHandler = {
   prevX: 0,
   prevY: 0,
   mousedown: function(e) {
+    const {points} = globalObjects;
     const x = e.pageX - canvas.offsetLeft;
     const y = e.pageY - canvas.offsetTop;
 
@@ -49,10 +49,12 @@ const PencilHandler = {
    * Next event will be fired with both finger
    */
   cancelMousedown: function() {
+    const {points} = globalObjects;
     points.pop();
     this.ismousedown = false;
   },
   mouseup: function(e) {
+    const {points} = globalObjects;
     const x = e.pageX - canvas.offsetLeft;
     const y = e.pageY - canvas.offsetTop;
 
@@ -79,6 +81,7 @@ const PencilHandler = {
     this.ismousedown = false;
   },
   mousemove: function(e) {
+    const {points} = globalObjects;
     const x = e.pageX - canvas.offsetLeft;
     const y = e.pageY - canvas.offsetTop;
 

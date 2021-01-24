@@ -4,6 +4,7 @@ import {
 } from './common';
 import globalObjects from './global-objects';
 import globalOptions from './global-options';
+import TextHandler from './text-handler';
 import ZoomHandler from './zoom-handler';
 
 const DrawHelper = {
@@ -31,7 +32,13 @@ const DrawHelper = {
   getPropertiesWithScale: function(coor, opt, scale) {
     scale = scale || ZoomHandler.scale;
     let scaledOpt = null;
-    const scaledCoor = coor.map((en) => en * scale);
+    const scaledCoor = coor.map((en) => {
+      if (parseFloat(en)) {
+        return en * scale;
+      } else {
+        return en;
+      }
+    });
 
     if (Array.isArray(opt)) {
       scaledOpt = opt.map((en) => en);
@@ -136,7 +143,7 @@ const DrawHelper = {
   },
   text: function(context, point, options) {
     this.handleOptions(context, options);
-    context.fillStyle = textHandler.getFillColor(options[2]);
+    context.fillStyle = TextHandler.getFillColor(options[2]);
     context.fillText(
       point[0].substr(1, point[0].length - 2),
       point[1],

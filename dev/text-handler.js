@@ -3,6 +3,7 @@ import {
   is,
 } from './common';
 import DrawHelper from './draw-helper';
+import globalObjects from './global-objects';
 import globalOptions from './global-options';
 
 const TextHandler = {
@@ -93,11 +94,11 @@ const TextHandler = {
   },
   appendPoints: function() {
     const options = this.getOptions();
-    points[points.length] = [
+    globalObjects.points.push([
       'text',
       ['"' + this.text + '"', this.x, this.y],
-      drawHelper.getOptions(options),
-    ];
+      DrawHelper.getOptions(options),
+    ]);
   },
   mousedown: function(e) {
     if (!is.isText) return;
@@ -157,24 +158,29 @@ const TextHandler = {
     this.showOrHideTextTools('show');
 
     this.eachFontFamily(function(child) {
-      child.onclick = function(e) {
+      /**
+       *
+       * @param {*} e
+       * @this f
+       */
+      function f(e) {
         e.preventDefault();
 
         this.showOrHideTextTools('hide');
-
-        this.selectedFontFamily = this.innerHTML;
+        this.selectedFontFamily = e.target.innerHTML;
         this.className = 'font-family-selected';
       };
+      child.onclick = f.bind(this);
       child.style.fontFamily = child.innerHTML;
     });
 
     this.eachFontSize(function(child) {
-      child.onclick = function(e) {
+      child.onclick = (e) => {
         e.preventDefault();
 
         this.showOrHideTextTools('hide');
 
-        this.selectedFontSize = this.innerHTML;
+        this.selectedFontSize = e.target.innerHTML;
         this.className = 'font-family-selected';
       };
       // child.style.fontSize = child.innerHTML + 'px';
@@ -195,7 +201,11 @@ const TextHandler = {
       textbox.id = 'virtual-textbox';
       textbox.setAttribute('type', 'text');
       textbox.style.opacity = '0';
-      textbox.style.display = 'none';
+      textbox.style.position = 'absolute';
+      textbox.style.backgroundColor = 'red';
+      textbox.style.bottom = '0';
+      textbox.style.left = '0';
+      // textbox.style.display = 'none';
 
       textbox.addEventListener('keyup', function(e) {
         this.text = e.target.value;
@@ -205,12 +215,14 @@ const TextHandler = {
 
     textbox.value = '';
     document.body.append(textbox);
-    textbox.focus();
+    setTimeout(() => {
+      textbox.focus();
+    }, 300);
   },
   eachFontFamily: function(callback) {
     const childs = this.fontFamilyBox.querySelectorAll('li');
     for (let i = 0; i < childs.length; i++) {
-      callback(childs[i]);
+      callback.call(this, childs[i]);
     }
   },
   unselectAllFontFamilies: function() {
@@ -224,7 +236,7 @@ const TextHandler = {
   eachFontSize: function(callback) {
     const childs = this.fontSizeBox.querySelectorAll('li');
     for (let i = 0; i < childs.length; i++) {
-      callback(childs[i]);
+      callback.call(this, childs[i]);
     }
   },
   unselectAllFontSizes: function() {

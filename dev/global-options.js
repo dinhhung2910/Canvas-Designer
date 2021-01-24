@@ -3,6 +3,7 @@ import {options} from './constants';
 const globalOptions = {
   pencilStrokeStyle: localStorage.getItem(options.PENCIL_STROKE_STYLE) || '',
   pencilLineWidth: localStorage.getItem(options.PENCIL_LINE_WIDTH) || '',
+  eraserLineWidth: localStorage.getItem(options.ERASER_LINE_WIDTH) || '',
   markerStrokeStyle: '',
   lineCap: 'round',
   lineJoin: 'round',
@@ -20,7 +21,11 @@ const saveSingleOption = (option, value) => {
   case 'pencilLineWidth':
     localStorage.setItem(options.PENCIL_LINE_WIDTH, value);
     break;
+  case 'eraserLineWidth':
+    localStorage.setItem(options.ERASER_LINE_WIDTH, value);
+    break;
   }
+
   globalOptions[option] = value;
 };
 

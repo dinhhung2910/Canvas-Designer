@@ -11,6 +11,7 @@ import {syncPoints} from './share-drawings';
 import hideContainers from './decorator/hide-containers';
 import * as Hammer from 'hammerjs';
 import ZoomHandler from './zoom-handler';
+import EraserHandler from './eraser-handler';
 
 const {points} = globalObjects;
 const canvas = tempContext.canvas;
@@ -67,8 +68,13 @@ addEvent(canvas, isTouch ? 'touchstart' : 'mousedown', function(e) {
     } else {
       PencilHandler.mousedown(e);
     }
-  } else if (cache.isEraser) eraserHandler.mousedown(e);
-  else if (cache.isText) textHandler.mousedown(e);
+  } else if (cache.isEraser) {
+    if (isMultiTouch) {
+      // EraserHandler.
+    } else {
+      EraserHandler.mousedown(e);
+    }
+  } else if (cache.isText) textHandler.mousedown(e);
   else if (cache.isImage) imageHandler.mousedown(e);
   else if (cache.isPdf) pdfHandler.mousedown(e);
   else if (cache.isArrow) arrowHandler.mousedown(e);
@@ -138,7 +144,7 @@ addEvent(
     else if (cache.isDragLastPath || cache.isDragAllPaths) {
       dragHelper.mouseup(e);
     } else if (cache.isPencil && !isMultiTouch) PencilHandler.mouseup(e);
-    else if (cache.isEraser) eraserHandler.mouseup(e);
+    else if (cache.isEraser && !isMultiTouch) EraserHandler.mouseup(e);
     else if (cache.isText) textHandler.mouseup(e);
     else if (cache.isImage) imageHandler.mouseup(e);
     else if (cache.isPdf) pdfHandler.mousedown(e);
@@ -181,7 +187,7 @@ addEvent(canvas, isTouch ? 'touchmove mousemove' : 'mousemove', function(e) {
   else if (cache.isDragLastPath || cache.isDragAllPaths) {
     dragHelper.mousemove(e);
   } else if (cache.isPencil && !isMultiTouch) PencilHandler.mousemove(e);
-  else if (cache.isEraser) eraserHandler.mousemove(e);
+  else if (cache.isEraser && !isMultiTouch) EraserHandler.mousemove(e);
   else if (cache.isText) textHandler.mousemove(e);
   else if (cache.isImage) imageHandler.mousemove(e);
   else if (cache.isPdf) pdfHandler.mousedown(e);

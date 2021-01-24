@@ -3,12 +3,13 @@ import {
   context,
 } from './common';
 import globalObjects from './global-objects';
+import globalOptions from './global-options';
 import ZoomHandler from './zoom-handler';
-
-const points = globalObjects.points;
 
 const DrawHelper = {
   redraw: function(scale) {
+    const points = globalObjects.points;
+
     tempContext.clearRect(0, 0, innerWidth, innerHeight);
     context.clearRect(0, 0, innerWidth, innerHeight);
 
@@ -44,14 +45,14 @@ const DrawHelper = {
   getOptions: function(opt) {
     opt = opt || {};
     return [
-      opt.lineWidth || lineWidth,
-      opt.strokeStyle || strokeStyle,
-      opt.fillStyle || fillStyle,
-      opt.globalAlpha || globalAlpha,
-      opt.globalCompositeOperation || globalCompositeOperation,
-      opt.lineCap || lineCap,
-      opt.lineJoin || lineJoin,
-      opt.font || font,
+      opt.lineWidth || globalOptions.pencilLineWidth,
+      opt.strokeStyle || globalOptions.pencilStrokeStyle,
+      opt.fillStyle || globalOptions.fillStyle,
+      opt.globalAlpha || globalOptions.globalAlpha,
+      opt.globalCompositeOperation || globalOptions.globalCompositeOperation,
+      opt.lineCap || globalOptions.lineCap,
+      opt.lineJoin || globalOptions.lineJoin,
+      opt.font || globalOptions.font,
     ];
   },
   handleOptions: function(context, opt, isNoFillStroke) {
@@ -78,7 +79,6 @@ const DrawHelper = {
     context.beginPath();
     context.moveTo(point[0], point[1]);
     context.lineTo(point[2], point[3]);
-
     this.handleOptions(context, options);
   },
   pencil: function(context, point, options) {

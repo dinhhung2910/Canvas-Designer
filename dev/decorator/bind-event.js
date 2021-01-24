@@ -114,13 +114,13 @@ function bindEvent(context, shape) {
     }
 
     if (this.id === 'eraser-icon') {
-      cache.strokeStyle = strokeStyle;
-      cache.fillStyle = fillStyle;
-      cache.lineWidth = lineWidth;
+      cache.strokeStyle = globalOptions.pencilStrokeStyle; // strokeStyle;
+      cache.fillStyle = globalOptions.fillStyle;
+      cache.lineWidth = globalOptions.pencilLineWidth;
 
-      strokeStyle = 'White';
-      fillStyle = 'White';
-      lineWidth = 10;
+      // strokeStyle = 'White';
+      // fillStyle = 'White';
+      // lineWidth = 10;
     } else if (
       cache.strokeStyle &&
         cache.fillStyle &&

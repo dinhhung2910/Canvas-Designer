@@ -12,6 +12,7 @@ import hideContainers from './decorator/hide-containers';
 import * as Hammer from 'hammerjs';
 import ZoomHandler from './zoom-handler';
 import EraserHandler from './eraser-handler';
+import TextHandler from './text-handler';
 
 const {points} = globalObjects;
 const canvas = tempContext.canvas;
@@ -74,7 +75,7 @@ addEvent(canvas, isTouch ? 'touchstart' : 'mousedown', function(e) {
     } else {
       EraserHandler.mousedown(e);
     }
-  } else if (cache.isText) textHandler.mousedown(e);
+  } else if (cache.isText) TextHandler.mousedown(e);
   else if (cache.isImage) imageHandler.mousedown(e);
   else if (cache.isPdf) pdfHandler.mousedown(e);
   else if (cache.isArrow) arrowHandler.mousedown(e);
@@ -145,7 +146,7 @@ addEvent(
       dragHelper.mouseup(e);
     } else if (cache.isPencil && !isMultiTouch) PencilHandler.mouseup(e);
     else if (cache.isEraser && !isMultiTouch) EraserHandler.mouseup(e);
-    else if (cache.isText) textHandler.mouseup(e);
+    else if (cache.isText) TextHandler.mouseup(e);
     else if (cache.isImage) imageHandler.mouseup(e);
     else if (cache.isPdf) pdfHandler.mousedown(e);
     else if (cache.isArrow) arrowHandler.mouseup(e);
@@ -188,7 +189,7 @@ addEvent(canvas, isTouch ? 'touchmove mousemove' : 'mousemove', function(e) {
     dragHelper.mousemove(e);
   } else if (cache.isPencil && !isMultiTouch) PencilHandler.mousemove(e);
   else if (cache.isEraser && !isMultiTouch) EraserHandler.mousemove(e);
-  else if (cache.isText) textHandler.mousemove(e);
+  else if (cache.isText) TextHandler.mousemove(e);
   else if (cache.isImage) imageHandler.mousemove(e);
   else if (cache.isPdf) pdfHandler.mousedown(e);
   else if (cache.isArrow) arrowHandler.mousemove(e);
@@ -269,21 +270,21 @@ function onkeyup(e) {
 
   if (keyCode === 13 && is.isText) {
     // no handle anumore
-    // textHandler.onReturnKeyPressed();
+    // TextHandler.onReturnKeyPressed();
     return;
   }
 
   if (keyCode == 8 || keyCode == 46) {
     if (isBackKey(e, keyCode)) {
       // no handle anymore
-      // textHandler.writeText(textHandler.lastKeyPress, true);
+      // TextHandler.writeText(TextHandler.lastKeyPress, true);
     }
     return;
   }
 
   // Ctrl + t
   if (globalEvents.isControlKeyPressed && keyCode === 84 && is.isText) {
-    textHandler.showTextTools();
+    TextHandler.showTextTools();
     return;
   }
 
@@ -349,7 +350,7 @@ function onkeypress(e) {
   const inp = String.fromCharCode(keyCode);
   if (/[a-zA-Z0-9-_ !?|\/'",.=:;(){}\[\]`~@#$%^&*+-]/.test(inp)) {
     // no handle anymore
-    // textHandler.writeText(String.fromCharCode(keyCode));
+    // TextHandler.writeText(String.fromCharCode(keyCode));
   }
 }
 
@@ -368,7 +369,7 @@ function onTextFromClipboard(e) {
     pastedText = e.clipboardData.getData('text/plain');
   }
   if (pastedText && pastedText.length) {
-    textHandler.writeText(pastedText);
+    TextHandler.writeText(pastedText);
   }
 }
 

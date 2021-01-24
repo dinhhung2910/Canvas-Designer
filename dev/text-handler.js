@@ -1,6 +1,9 @@
 import {
   tempContext,
+  is,
 } from './common';
+import DrawHelper from './draw-helper';
+import globalOptions from './global-options';
 
 const TextHandler = {
   text: '',
@@ -22,7 +25,7 @@ const TextHandler = {
     }
   },
   getFillColor: function(color) {
-    color = (color || fillStyle).toLowerCase();
+    color = (color || globalOptions.fillStyle).toLowerCase();
 
     if (
       color == 'rgba(255, 255, 255, 0)' ||
@@ -38,14 +41,14 @@ const TextHandler = {
     if (!is.isText) return;
 
     if (isBackKeyPressed) {
-      textHandler.text =
-        textHandler.text.substr(0, textHandler.text.length - 1);
-      textHandler.fillText(textHandler.text);
+      this.text =
+        this.text.substr(0, this.text.length - 1);
+      this.fillText(this.text);
       return;
     }
 
-    textHandler.text += keyPressed;
-    textHandler.fillText(textHandler.text);
+    this.text += keyPressed;
+    this.fillText(this.text);
   },
   fillText: function(text) {
     if (!is.isText) return;
@@ -55,29 +58,29 @@ const TextHandler = {
       tempContext.canvas.width, tempContext.canvas.height,
     );
 
-    const options = textHandler.getOptions();
-    drawHelper.handleOptions(tempContext, options);
-    tempContext.fillStyle = textHandler.getFillColor(options[2]);
-    tempContext.font = textHandler.selectedFontSize + 'px "' +
-      textHandler.selectedFontFamily + '"';
+    const options = this.getOptions();
+    DrawHelper.handleOptions(tempContext, options);
+    tempContext.fillStyle = this.getFillColor(options[2]);
+    tempContext.font = this.selectedFontSize + 'px "' +
+      this.selectedFontFamily + '"';
 
-    tempContext.fillText(text, textHandler.x, textHandler.y);
+    tempContext.fillText(text, this.x, this.y);
   },
   blinkCursorInterval: null,
   index: 0,
   blinkCursor: function() {
-    textHandler.index++;
-    if (textHandler.index % 2 == 0) {
-      textHandler.fillText(textHandler.text + '|');
+    this.index++;
+    if (this.index % 2 == 0) {
+      this.fillText(this.text + '|');
     } else {
-      textHandler.fillText(textHandler.text);
+      this.fillText(this.text);
     }
   },
   getOptions: function() {
     const options = {
-      font: textHandler.selectedFontSize + 'px "' +
-        textHandler.selectedFontFamily + '"',
-      fillStyle: textHandler.getFillColor(),
+      font: this.selectedFontSize + 'px "' +
+        this.selectedFontFamily + '"',
+      fillStyle: this.getFillColor(),
       strokeStyle: '#6c96c8',
       globalCompositeOperation: 'source-over',
       globalAlpha: 1,
@@ -85,39 +88,39 @@ const TextHandler = {
       lineCap: 'round',
       lineWidth: 2,
     };
-    font = options.font;
+    globalOptions.font = options.font;
     return options;
   },
   appendPoints: function() {
-    const options = textHandler.getOptions();
+    const options = this.getOptions();
     points[points.length] = [
       'text',
-      ['"' + textHandler.text + '"', textHandler.x, textHandler.y],
+      ['"' + this.text + '"', this.x, this.y],
       drawHelper.getOptions(options),
     ];
   },
   mousedown: function(e) {
     if (!is.isText) return;
 
-    if (textHandler.text.length) {
+    if (this.text.length) {
       this.appendPoints();
     }
 
-    textHandler.x = textHandler.y = 0;
-    textHandler.text = '';
+    this.x = this.y = 0;
+    this.text = '';
 
-    textHandler.pageX = e.pageX;
-    textHandler.pageY = e.pageY;
+    this.pageX = e.pageX;
+    this.pageY = e.pageY;
 
-    textHandler.x = e.pageX - canvas.offsetLeft - 5;
-    textHandler.y = e.pageY - canvas.offsetTop + 10;
+    this.x = e.pageX - tempContext.canvas.offsetLeft - 5;
+    this.y = e.pageY - tempContext.canvas.offsetTop + 10;
 
-    if (typeof textHandler.blinkCursorInterval !== 'undefined') {
-      clearInterval(textHandler.blinkCursorInterval);
+    if (typeof this.blinkCursorInterval !== 'undefined') {
+      clearInterval(this.blinkCursorInterval);
     }
 
-    textHandler.blinkCursor();
-    textHandler.blinkCursorInterval = setInterval(textHandler.blinkCursor, 700);
+    this.blinkCursor();
+    this.blinkCursorInterval = setInterval(this.blinkCursor.bind(this), 700);
 
     this.showTextTools();
     this.focusVirtualTextbox();
@@ -127,12 +130,12 @@ const TextHandler = {
   showOrHideTextTools: function(show) {
     if (show === 'hide') {
       if (this.lastFillStyle.length) {
-        fillStyle = this.lastFillStyle;
+        globalOptions.fillStyle = this.lastFillStyle;
         this.lastFillStyle = '';
       }
     } else if (!this.lastFillStyle.length) {
-      this.lastFillStyle = fillStyle;
-      fillStyle = 'black';
+      this.lastFillStyle = globalOptions.fillStyle;
+      globalOptions.fillStyle = 'black';
     }
 
     this.fontFamilyBox.style.display = show == 'show' ? 'block' : 'none';
@@ -157,9 +160,9 @@ const TextHandler = {
       child.onclick = function(e) {
         e.preventDefault();
 
-        textHandler.showOrHideTextTools('hide');
+        this.showOrHideTextTools('hide');
 
-        textHandler.selectedFontFamily = this.innerHTML;
+        this.selectedFontFamily = this.innerHTML;
         this.className = 'font-family-selected';
       };
       child.style.fontFamily = child.innerHTML;
@@ -169,9 +172,9 @@ const TextHandler = {
       child.onclick = function(e) {
         e.preventDefault();
 
-        textHandler.showOrHideTextTools('hide');
+        this.showOrHideTextTools('hide');
 
-        textHandler.selectedFontSize = this.innerHTML;
+        this.selectedFontSize = this.innerHTML;
         this.className = 'font-family-selected';
       };
       // child.style.fontSize = child.innerHTML + 'px';
@@ -210,9 +213,9 @@ const TextHandler = {
     }
   },
   unselectAllFontFamilies: function() {
-    this.eachFontFamily(function(child) {
+    this.eachFontFamily((child) => {
       child.className = '';
-      if (child.innerHTML === textHandler.selectedFontFamily) {
+      if (child.innerHTML === this.selectedFontFamily) {
         child.className = 'font-family-selected';
       }
     });
@@ -224,16 +227,16 @@ const TextHandler = {
     }
   },
   unselectAllFontSizes: function() {
-    this.eachFontSize(function(child) {
+    this.eachFontSize((child) => {
       child.className = '';
-      if (child.innerHTML === textHandler.selectedFontSize) {
+      if (child.innerHTML === this.selectedFontSize) {
         child.className = 'font-size-selected';
       }
     });
   },
   onReturnKeyPressed: function() {
-    if (!textHandler.text || !textHandler.text.length) return;
-    const fontSize = parseInt(textHandler.selectedFontSize) || 15;
+    if (!this.text || !this.text.length) return;
+    const fontSize = parseInt(this.selectedFontSize) || 15;
     this.mousedown({
       pageX: this.pageX,
       pageY: this.pageY + fontSize + 5,

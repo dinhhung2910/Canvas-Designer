@@ -195,6 +195,7 @@ const TextHandler = {
       textbox.id = 'virtual-textbox';
       textbox.setAttribute('type', 'text');
       textbox.style.opacity = '0';
+      textbox.style.display = 'none';
 
       textbox.addEventListener('keyup', function(e) {
         this.text = e.target.value;

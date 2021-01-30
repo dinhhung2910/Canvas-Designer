@@ -1,7 +1,8 @@
 const path = require('path');
 
 module.exports = {
-  entry: [
+  entry: {
+    widget: [
     // './dev/head.js',
     './dev/common.js',
 
@@ -32,5 +33,7 @@ module.exports = {
     './dev/canvas-designer-widget.js',
 
     // './dev/tail.js'
-  ],
+    ],
+    index: './dev/index.js'
+  }
 };

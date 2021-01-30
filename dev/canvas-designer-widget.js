@@ -257,3 +257,5 @@ function CanvasDesigner() {
   designer.widgetHtmlURL = 'widget.html';
   designer.widgetJsURL = 'widget.min.js';
 }
+
+export default CanvasDesigner;

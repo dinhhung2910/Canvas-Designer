@@ -197,7 +197,7 @@ const TextHandler = {
     let textbox = document.getElementById('virtual-textbox');
 
     if (!textbox) {
-      textbox = document.createElement('input');
+      textbox = document.createElement('textarea');
       textbox.id = 'virtual-textbox';
       textbox.setAttribute('type', 'text');
       textbox.style.opacity = '0';

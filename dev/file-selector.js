@@ -1,55 +1,67 @@
-var FileSelector = function() {
-    var selector = this;
+const FileSelector = function() {
+  const selector = this;
 
-    selector.selectSingleFile = selectFile;
-    selector.selectMultipleFiles = function(callback) {
-        selectFile(callback, true);
-    };
+  selector.selectSingleFile = selectFile;
+  selector.selectMultipleFiles = function(callback) {
+    selectFile(callback, true);
+  };
 
-    function selectFile(callback, multiple, accept) {
-        var file = document.createElement('input');
-        file.type = 'file';
+  /**
+   *
+   * @param {*} callback
+   * @param {*} multiple
+   * @param {*} accept
+   */
+  function selectFile(callback, multiple, accept) {
+    const file = document.createElement('input');
+    file.type = 'file';
 
-        if (multiple) {
-            file.multiple = true;
+    if (multiple) {
+      file.multiple = true;
+    }
+
+    file.accept = accept || 'image/*';
+
+    file.onchange = function() {
+      if (multiple) {
+        if (!file.files.length) {
+          console.error('No file selected.');
+          return;
         }
+        callback(file.files);
+        return;
+      }
 
-        file.accept = accept || 'image/*';
+      if (!file.files[0]) {
+        console.error('No file selected.');
+        return;
+      }
 
-        file.onchange = function() {
-            if (multiple) {
-                if (!file.files.length) {
-                    console.error('No file selected.');
-                    return;
-                }
-                callback(file.files);
-                return;
-            }
+      callback(file.files[0]);
 
-            if (!file.files[0]) {
-                console.error('No file selected.');
-                return;
-            }
+      file.parentNode.removeChild(file);
+    };
+    file.style.display = 'none';
+    (document.body || document.documentElement).appendChild(file);
+    fireClickEvent(file);
+  }
 
-            callback(file.files[0]);
+  /**
+   *
+   * @param {*} element
+   */
+  function fireClickEvent(element) {
+    const evt = new window.MouseEvent('click', {
+      view: window,
+      bubbles: true,
+      cancelable: true,
+      button: 0,
+      buttons: 0,
+      mozInputSource: 1,
+    });
 
-            file.parentNode.removeChild(file);
-        };
-        file.style.display = 'none';
-        (document.body || document.documentElement).appendChild(file);
-        fireClickEvent(file);
-    }
-
-    function fireClickEvent(element) {
-        var evt = new window.MouseEvent('click', {
-            view: window,
-            bubbles: true,
-            cancelable: true,
-            button: 0,
-            buttons: 0,
-            mozInputSource: 1
-        });
-
-        var fired = element.dispatchEvent(evt);
-    }
+    element.dispatchEvent(evt);
+  }
 };
+
+export default FileSelector;

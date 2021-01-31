@@ -1,51 +1,85 @@
-var imageHandler = {
-    lastImageURL: null,
-    lastImageIndex: 0,
-    images: [],
+import DrawHelper from './draw-helper';
+import globalObjects from './global-objects';
+import {syncPoints} from './share-drawings';
 
-    ismousedown: false,
-    prevX: 0,
-    prevY: 0,
-    load: function(width, height) {
-        var t = imageHandler;
-        points[points.length] = ['image', [imageHandler.lastImageURL, t.prevX, t.prevY, width, height, imageHandler.lastImageIndex], drawHelper.getOptions()];
-        document.getElementById('drag-last-path').click();
+const ImageHandler = {
+  lastImageURL: null,
+  lastImageIndex: 0,
+  images: [],
 
-        // share to webrtc
-        syncPoints(true);
-    },
-    mousedown: function(e) {
-        var x = e.pageX - canvas.offsetLeft,
-            y = e.pageY - canvas.offsetTop;
+  ismousedown: false,
+  prevX: 0,
+  prevY: 0,
+  load: function(width, height) {
+    const t = ImageHandler;
+    globalObjects.points.push([
+      'image',
+      [
+        ImageHandler.lastImageURL,
+        t.prevX, t.prevY, width, height,
+        ImageHandler.lastImageIndex,
+      ],
+      DrawHelper.getOptions(),
+    ]);
+    document.getElementById('drag-last-path').click();
 
-        var t = this;
+    // share to webrtc
+    syncPoints(true);
+  },
+  mousedown: function(e) {
+    const x = e.pageX - canvas.offsetLeft;
+    const y = e.pageY - canvas.offsetTop;
 
-        t.prevX = x;
-        t.prevY = y;
+    const t = this;
 
-        t.ismousedown = true;
-    },
-    mouseup: function(e) {
-        var x = e.pageX - canvas.offsetLeft,
-            y = e.pageY - canvas.offsetTop;
+    t.prevX = x;
+    t.prevY = y;
 
-        var t = this;
-        if (t.ismousedown) {
-            points[points.length] = ['image', [imageHandler.lastImageURL, t.prevX, t.prevY, x - t.prevX, y - t.prevY, imageHandler.lastImageIndex], drawHelper.getOptions()];
+    t.ismousedown = true;
+  },
+  mouseup: function(e) {
+    const x = e.pageX - canvas.offsetLeft;
+    const y = e.pageY - canvas.offsetTop;
 
-            t.ismousedown = false;
-        }
+    const t = this;
+    if (t.ismousedown) {
+      globalObjects.points.push([
+        'image',
+        [
+          ImageHandler.lastImageURL,
+          t.prevX,
+          t.prevY,
+          x - t.prevX,
+          y - t.prevY,
+          ImageHandler.lastImageIndex,
+        ],
+        DrawHelper.getOptions(),
+      ]);
 
-    },
-    mousemove: function(e) {
-        var x = e.pageX - canvas.offsetLeft,
-            y = e.pageY - canvas.offsetTop;
-
-        var t = this;
-        if (t.ismousedown) {
-            tempContext.clearRect(0, 0, innerWidth, innerHeight);
-
-            drawHelper.image(tempContext, [imageHandler.lastImageURL, t.prevX, t.prevY, x - t.prevX, y - t.prevY, imageHandler.lastImageIndex]);
-        }
+      t.ismousedown = false;
     }
+  },
+  mousemove: function(e) {
+    const x = e.pageX - canvas.offsetLeft;
+    const y = e.pageY - canvas.offsetTop;
+
+    const t = this;
+    if (t.ismousedown) {
+      TempContext.clearRect(0, 0, innerWidth, innerHeight);
+
+      DrawHelper.image(
+        tempContext,
+        [
+          ImageHandler.lastImageURL,
+          t.prevX,
+          t.prevY,
+          x - t.prevX,
+          y - t.prevY,
+          ImageHandler.lastImageIndex,
+        ],
+      );
+    }
+  },
 };
+
+export default ImageHandler;

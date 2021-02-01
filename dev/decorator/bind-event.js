@@ -3,7 +3,9 @@ import {
   find,
 } from '../common';
 import DragHelper from '../drag-helper';
+import FileSelector from '../file-selector';
 import globalOptions from '../global-options';
+import ImageHandler from '../image-handler';
 import TextHandler from '../text-handler';
 import setSelection from './set-selection';
 
@@ -62,13 +64,13 @@ function bindEvent(context, shape) {
         reader.onload = function(event) {
           const image = new Image();
           image.onload = function() {
-            const index = imageHandler.images.length;
+            const index = ImageHandler.images.length;
 
-            imageHandler.lastImageURL = image.src;
-            imageHandler.lastImageIndex = index;
+            ImageHandler.lastImageURL = image.src;
+            ImageHandler.lastImageIndex = index;
 
-            imageHandler.images.push(image);
-            imageHandler.load(image.clientWidth, image.clientHeight);
+            ImageHandler.images.push(image);
+            ImageHandler.load(image.clientWidth, image.clientHeight);
           };
           image.style =
                 'position: absolute; top: -99999999999; left: -999999999;';

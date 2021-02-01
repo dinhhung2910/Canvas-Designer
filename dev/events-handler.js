@@ -12,6 +12,9 @@ import hideContainers from './decorator/hide-containers';
 import * as Hammer from 'hammerjs';
 import ZoomHandler from './zoom-handler';
 import EraserHandler from './eraser-handler';
+import TextHandler from './text-handler';
+import ImageHandler from './image-handler';
+import DragHelper from './drag-helper';
 
 const {points} = globalObjects;
 const canvas = tempContext.canvas;
@@ -61,7 +64,7 @@ addEvent(canvas, isTouch ? 'touchstart' : 'mousedown', function(e) {
   else if (cache.isQuadraticCurve) quadraticHandler.mousedown(e);
   else if (cache.isBezierCurve) bezierHandler.mousedown(e);
   else if (cache.isDragLastPath || cache.isDragAllPaths) {
-    dragHelper.mousedown(e);
+    DragHelper.mousedown(e);
   } else if (cache.isPencil) {
     if (isMultiTouch) {
       PencilHandler.cancelMousedown();
@@ -74,8 +77,8 @@ addEvent(canvas, isTouch ? 'touchstart' : 'mousedown', function(e) {
     } else {
       EraserHandler.mousedown(e);
     }
-  } else if (cache.isText) textHandler.mousedown(e);
-  else if (cache.isImage) imageHandler.mousedown(e);
+  } else if (cache.isText) TextHandler.mousedown(e);
+  else if (cache.isImage) ImageHandler.mousedown(e);
   else if (cache.isPdf) pdfHandler.mousedown(e);
   else if (cache.isArrow) arrowHandler.mousedown(e);
   else if (cache.isMarker) markerHandler.mousedown(e);
@@ -142,11 +145,11 @@ addEvent(
     else if (cache.isQuadraticCurve) quadraticHandler.mouseup(e);
     else if (cache.isBezierCurve) bezierHandler.mouseup(e);
     else if (cache.isDragLastPath || cache.isDragAllPaths) {
-      dragHelper.mouseup(e);
+      DragHelper.mouseup(e);
     } else if (cache.isPencil && !isMultiTouch) PencilHandler.mouseup(e);
     else if (cache.isEraser && !isMultiTouch) EraserHandler.mouseup(e);
-    else if (cache.isText) textHandler.mouseup(e);
-    else if (cache.isImage) imageHandler.mouseup(e);
+    else if (cache.isText) TextHandler.mouseup(e);
+    else if (cache.isImage) ImageHandler.mouseup(e);
     else if (cache.isPdf) pdfHandler.mousedown(e);
     else if (cache.isArrow) arrowHandler.mouseup(e);
     else if (cache.isMarker) markerHandler.mouseup(e);
@@ -185,11 +188,11 @@ addEvent(canvas, isTouch ? 'touchmove mousemove' : 'mousemove', function(e) {
   else if (cache.isQuadraticCurve) quadraticHandler.mousemove(e);
   else if (cache.isBezierCurve) bezierHandler.mousemove(e);
   else if (cache.isDragLastPath || cache.isDragAllPaths) {
-    dragHelper.mousemove(e);
+    DragHelper.mousemove(e);
   } else if (cache.isPencil && !isMultiTouch) PencilHandler.mousemove(e);
   else if (cache.isEraser && !isMultiTouch) EraserHandler.mousemove(e);
-  else if (cache.isText) textHandler.mousemove(e);
-  else if (cache.isImage) imageHandler.mousemove(e);
+  else if (cache.isText) TextHandler.mousemove(e);
+  else if (cache.isImage) ImageHandler.mousemove(e);
   else if (cache.isPdf) pdfHandler.mousedown(e);
   else if (cache.isArrow) arrowHandler.mousemove(e);
   else if (cache.isMarker) markerHandler.mousemove(e);
@@ -269,21 +272,21 @@ function onkeyup(e) {
 
   if (keyCode === 13 && is.isText) {
     // no handle anumore
-    // textHandler.onReturnKeyPressed();
+    // TextHandler.onReturnKeyPressed();
     return;
   }
 
   if (keyCode == 8 || keyCode == 46) {
     if (isBackKey(e, keyCode)) {
       // no handle anymore
-      // textHandler.writeText(textHandler.lastKeyPress, true);
+      // TextHandler.writeText(TextHandler.lastKeyPress, true);
     }
     return;
   }
 
   // Ctrl + t
   if (globalEvents.isControlKeyPressed && keyCode === 84 && is.isText) {
-    textHandler.showTextTools();
+    TextHandler.showTextTools();
     return;
   }
 
@@ -299,7 +302,7 @@ function onkeyup(e) {
 
   // Ctrl + a
   if (globalEvents.isControlKeyPressed && keyCode === 65) {
-    dragHelper.global.startingIndex = 0;
+    DragHelper.global.startingIndex = 0;
 
     endLastPath();
 
@@ -349,7 +352,7 @@ function onkeypress(e) {
   const inp = String.fromCharCode(keyCode);
   if (/[a-zA-Z0-9-_ !?|\/'",.=:;(){}\[\]`~@#$%^&*+-]/.test(inp)) {
     // no handle anymore
-    // textHandler.writeText(String.fromCharCode(keyCode));
+    // TextHandler.writeText(String.fromCharCode(keyCode));
   }
 }
 
@@ -368,7 +371,7 @@ function onTextFromClipboard(e) {
     pastedText = e.clipboardData.getData('text/plain');
   }
   if (pastedText && pastedText.length) {
-    textHandler.writeText(pastedText);
+    TextHandler.writeText(pastedText);
   }
 }
 

@@ -4,6 +4,8 @@ import {
 } from './common';
 import globalObjects from './global-objects';
 import globalOptions from './global-options';
+import ImageHandler from './image-handler';
+import TextHandler from './text-handler';
 import ZoomHandler from './zoom-handler';
 
 const DrawHelper = {
@@ -31,7 +33,13 @@ const DrawHelper = {
   getPropertiesWithScale: function(coor, opt, scale) {
     scale = scale || ZoomHandler.scale;
     let scaledOpt = null;
-    const scaledCoor = coor.map((en) => en * scale);
+    const scaledCoor = coor.map((en) => {
+      if (parseFloat(en)) {
+        return en * scale;
+      } else {
+        return en;
+      }
+    });
 
     if (Array.isArray(opt)) {
       scaledOpt = opt.map((en) => en);
@@ -136,7 +144,7 @@ const DrawHelper = {
   },
   text: function(context, point, options) {
     this.handleOptions(context, options);
-    context.fillStyle = textHandler.getFillColor(options[2]);
+    context.fillStyle = TextHandler.getFillColor(options[2]);
     context.fillText(
       point[0].substr(1, point[0].length - 2),
       point[1],
@@ -158,16 +166,16 @@ const DrawHelper = {
   image: function(context, point, options) {
     this.handleOptions(context, options, true);
 
-    let image = imageHandler.images[point[5]];
+    let image = ImageHandler.images[point[5]];
     if (!image) {
       image = new Image();
       image.onload = function() {
-        const index = imageHandler.images.length;
+        const index = ImageHandler.images.length;
 
-        imageHandler.lastImageURL = image.src;
-        imageHandler.lastImageIndex = index;
+        ImageHandler.lastImageURL = image.src;
+        ImageHandler.lastImageIndex = index;
 
-        imageHandler.images.push(image);
+        ImageHandler.images.push(image);
         context.drawImage(image, point[1], point[2], point[3], point[4]);
       };
       image.src = point[0];
@@ -183,7 +191,7 @@ const DrawHelper = {
     if (!image) {
       image = new Image();
       image.onload = function() {
-        const index = imageHandler.images.length;
+        const index = ImageHandler.images.length;
 
         pdfHandler.lastPage = image.src;
         pdfHandler.lastIndex = index;

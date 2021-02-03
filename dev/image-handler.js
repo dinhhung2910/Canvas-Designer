@@ -17,7 +17,7 @@ const ImageHandler = {
       [
         ImageHandler.lastImageURL,
         t.prevX, t.prevY, width, height,
-        ImageHandler.lastImageIndex,
+        ++ImageHandler.lastImageIndex,
       ],
       DrawHelper.getOptions(),
     ]);

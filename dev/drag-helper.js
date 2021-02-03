@@ -1,4 +1,15 @@
 import globalEvents from './global-events';
+import globalObjects from './global-objects';
+import {
+  tempContext,
+  context,
+  is,
+  copy,
+  paste,
+} from './common';
+import DrawHelper from './draw-helper';
+
+const canvas = tempContext.canvas;
 
 const DragHelper = {
   global: {
@@ -15,7 +26,7 @@ const DragHelper = {
       globalEvents.isControlKeyPressed = false;
     }
 
-    const dHelper = dragHelper;
+    const dHelper = DragHelper;
     const g = dHelper.global;
 
     const x = e.pageX - canvas.offsetLeft;
@@ -26,8 +37,8 @@ const DragHelper = {
 
     g.pointsToMove = 'all';
 
-    if (points.length) {
-      const p = points[points.length - 1];
+    if (globalObjects.points.length) {
+      const p = globalObjects.points[globalObjects.points.length - 1];
       const point = p[1];
 
       if (p[0] === 'line') {
@@ -174,7 +185,7 @@ const DragHelper = {
     const y = e.pageY - canvas.offsetTop;
     const g = this.global;
 
-    drawHelper.redraw();
+    DrawHelper.redraw();
 
     if (g.ismousedown) {
       this.dragShape(x, y);
@@ -183,9 +194,9 @@ const DragHelper = {
     if (is.isDragLastPath) this.init();
   },
   init: function() {
-    if (!points.length) return;
+    if (!globalObjects.points.length) return;
 
-    const p = points[points.length - 1];
+    const p = globalObjects.points[globalObjects.points.length - 1];
     const point = p[1];
     const g = this.global;
 
@@ -409,28 +420,29 @@ const DragHelper = {
     g.prevY = y;
   },
   end: function() {
-    if (!points.length) return;
+    if (!globalObjects.points.length) return;
 
     tempContext.clearRect(0, 0, innerWidth, innerHeight);
+    const {points} = globalObjects;
 
     const point = points[points.length - 1];
-    drawHelper[point[0]](context, point[1], point[2]);
+    DrawHelper[point[0]](context, point[1], point[2]);
   },
   dragAllPaths: function(x, y) {
     const g = this.global;
     const prevX = g.prevX;
     const prevY = g.prevY;
     let p; let point;
-    const length = points.length;
+    const length = globalObjects.points.length;
     const getPoint = this.getPoint;
     let i = g.startingIndex;
 
     for (i; i < length; i++) {
-      p = points[i];
+      p = globalObjects.points[i];
       point = p[1];
 
       if (p[0] === 'line') {
-        points[i] = [p[0],
+        globalObjects.points[i] = [p[0],
           [
             getPoint(x, prevX, point[0]),
             getPoint(y, prevY, point[1]),
@@ -441,7 +453,7 @@ const DragHelper = {
       }
 
       if (p[0] === 'pencil') {
-        points[i] = [p[0],
+        globalObjects.points[i] = [p[0],
           [
             getPoint(x, prevX, point[0]),
             getPoint(y, prevY, point[1]),
@@ -452,7 +464,7 @@ const DragHelper = {
       }
 
       if (p[0] === 'arrow') {
-        points[i] = [p[0],
+        globalObjects.points[i] = [p[0],
           [
             getPoint(x, prevX, point[0]),
             getPoint(y, prevY, point[1]),
@@ -463,7 +475,7 @@ const DragHelper = {
       }
 
       if (p[0] === 'text') {
-        points[i] = [p[0],
+        globalObjects.points[i] = [p[0],
           [
             point[0],
             getPoint(x, prevX, point[1]),
@@ -473,7 +485,7 @@ const DragHelper = {
       }
 
       if (p[0] === 'arc') {
-        points[i] = [p[0],
+        globalObjects.points[i] = [p[0],
           [
             getPoint(x, prevX, point[0]),
             getPoint(y, prevY, point[1]),
@@ -485,7 +497,7 @@ const DragHelper = {
       }
 
       if (p[0] === 'rect') {
-        points[i] = [p[0],
+        globalObjects.points[i] = [p[0],
           [
             getPoint(x, prevX, point[0]),
             getPoint(y, prevY, point[1]),
@@ -496,7 +508,7 @@ const DragHelper = {
       }
 
       if (p[0] === 'image') {
-        points[i] = [p[0],
+        globalObjects.points[i] = [p[0],
           [
             point[0],
             getPoint(x, prevX, point[1]),
@@ -509,7 +521,7 @@ const DragHelper = {
       }
 
       if (p[0] === 'pdf') {
-        points[i] = [p[0],
+        globalObjects.points[i] = [p[0],
           [
             point[0],
             getPoint(x, prevX, point[1]),
@@ -522,7 +534,7 @@ const DragHelper = {
       }
 
       if (p[0] === 'quadratic') {
-        points[i] = [p[0],
+        globalObjects.points[i] = [p[0],
           [
             getPoint(x, prevX, point[0]),
             getPoint(y, prevY, point[1]),
@@ -535,7 +547,7 @@ const DragHelper = {
       }
 
       if (p[0] === 'bezier') {
-        points[i] = [p[0],
+        globalObjects.points[i] = [p[0],
           [
             getPoint(x, prevX, point[0]),
             getPoint(y, prevY, point[1]),
@@ -552,11 +564,12 @@ const DragHelper = {
   },
   dragLastPath: function(x, y) {
     // if last past is undefined?
-    if (!points[points.length - 1]) return;
+    if (!globalObjects.points[globalObjects.points.length - 1]) return;
 
     const g = this.global;
     const prevX = g.prevX;
     const prevY = g.prevY;
+    const {points} = globalObjects;
     const p = points[points.length - 1];
     const point = p[1];
     const getPoint = this.getPoint;
@@ -574,7 +587,9 @@ const DragHelper = {
         point[3] = getPoint(y, prevY, point[3]);
       }
 
-      points[points.length - 1] = [p[0], point, p[2]];
+      globalObjects.points[globalObjects.points.length - 1] = [
+        p[0], point, p[2],
+      ];
     }
 
     if (p[0] === 'pencil') {
@@ -588,7 +603,9 @@ const DragHelper = {
         point[3] = getPoint(y, prevY, point[3]);
       }
 
-      points[points.length - 1] = [p[0], point, p[2]];
+      points[points.length - 1] = [
+        p[0], point, p[2],
+      ];
     }
 
     if (p[0] === 'arrow') {
@@ -602,7 +619,9 @@ const DragHelper = {
         point[3] = getPoint(y, prevY, point[3]);
       }
 
-      points[points.length - 1] = [p[0], point, p[2]];
+      globalObjects.points[globalObjects.points.length - 1] = [
+        p[0], point, p[2],
+      ];
     }
 
     if (p[0] === 'text') {
@@ -611,14 +630,18 @@ const DragHelper = {
         point[2] = getPoint(y, prevY, point[2]);
       }
 
-      points[points.length - 1] = [p[0], point, p[2]];
+      globalObjects.points[globalObjects.points.length - 1] = [
+        p[0], point, p[2],
+      ];
     }
 
     if (p[0] === 'arc') {
       point[0] = getPoint(x, prevX, point[0]);
       point[1] = getPoint(y, prevY, point[1]);
 
-      points[points.length - 1] = [p[0], point, p[2]];
+      globalObjects.points[globalObjects.points.length - 1] = [
+        p[0], point, p[2],
+      ];
     }
 
     if (p[0] === 'rect') {
@@ -675,7 +698,9 @@ const DragHelper = {
         point[3] = getPoint(y, prevY, point[3]);
       }
 
-      points[points.length - 1] = [p[0], point, p[2]];
+      globalObjects.points[globalObjects.points.length - 1] = [
+        p[0], point, p[2],
+      ];
     }
 
     if (p[0] === 'image') {
@@ -732,7 +757,9 @@ const DragHelper = {
         point[4] = getPoint(y, prevY, point[4]);
       }
 
-      points[points.length - 1] = [p[0], point, p[2]];
+      globalObjects.points[globalObjects.points.length - 1] = [
+        p[0], point, p[2],
+      ];
     }
 
     if (p[0] === 'pdf') {
@@ -789,7 +816,9 @@ const DragHelper = {
         point[4] = getPoint(y, prevY, point[4]);
       }
 
-      points[points.length - 1] = [p[0], point, p[2]];
+      globalObjects.points[globalObjects.points.length - 1] = [
+        p[0], point, p[2],
+      ];
     }
 
     if (p[0] === 'quadratic') {
@@ -808,7 +837,9 @@ const DragHelper = {
         point[5] = getPoint(y, prevY, point[5]);
       }
 
-      points[points.length - 1] = [p[0], point, p[2]];
+      globalObjects.points[globalObjects.points.length - 1] = [
+        p[0], point, p[2],
+      ];
     }
 
     if (p[0] === 'bezier') {
@@ -832,7 +863,9 @@ const DragHelper = {
         point[7] = getPoint(y, prevY, point[7]);
       }
 
-      points[points.length - 1] = [p[0], point, p[2]];
+      globalObjects.points[globalObjects.points.length - 1] = [
+        p[0], point, p[2],
+      ];
     }
   },
 };

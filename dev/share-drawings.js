@@ -2,8 +2,6 @@
 import DrawHelper from './draw-helper';
 import globalObjects from './global-objects';
 
-const {points} = globalObjects;
-
 // scripts on this page directly touches DOM-elements
 // removing or altering anything may cause failures in the UI event handlers
 // it is used only to bring collaboration for canvas-surface
@@ -167,6 +165,8 @@ window.addEventListener('message', function(event) {
  * @param {*} isSyncAll
  */
 function syncPoints(isSyncAll) {
+  const {points} = globalObjects;
+
   if (isSyncAll) {
     lastPointIndex = 0;
   }

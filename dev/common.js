@@ -692,6 +692,9 @@ function endLastPath() {
 
 let copiedStuff = [];
 
+/**
+ *
+ */
 function copy() {
   endLastPath();
 
@@ -840,4 +843,6 @@ export {
   tempContext,
   context,
   common,
+  copy,
+  paste,
 };

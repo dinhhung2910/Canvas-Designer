@@ -239,8 +239,10 @@ const DragHelper = {
     if (p[0] === 'pencil') {
       tempContext.beginPath();
 
-      tempContext.arc(point[0], point[1], 10, Math.PI * 2, 0, !1);
-      tempContext.arc(point[2], point[3], 10, Math.PI * 2, 0, !1);
+      const [scaledCoor] = DrawHelper.getPropertiesWithScale(point);
+
+      tempContext.arc(scaledCoor[0], scaledCoor[1], 10, Math.PI * 2, 0, !1);
+      tempContext.arc(scaledCoor[2], scaledCoor[3], 10, Math.PI * 2, 0, !1);
 
       tempContext.fill();
     }

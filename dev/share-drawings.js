@@ -10,6 +10,8 @@ let lastPointIndex = 0;
 let uid;
 
 window.addEventListener('message', function(event) {
+  const {points} = globalObjects;
+
   if (!event.data) return;
 
   if (!uid) {

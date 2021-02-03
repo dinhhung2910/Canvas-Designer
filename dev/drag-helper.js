@@ -188,10 +188,11 @@ const DragHelper = {
     const y = e.pageY - canvas.offsetTop;
     const g = this.global;
 
-    DrawHelper.redraw();
+    // ;
 
     if (g.ismousedown) {
       this.dragShape(x, y);
+      DrawHelper.redraw();
     }
 
     if (is.isDragLastPath) this.init();
@@ -287,22 +288,38 @@ const DragHelper = {
     }
 
     if (p[0] === 'image') {
-      tempContext.beginPath();
-      tempContext.arc(point[1], point[2], 10, Math.PI * 2, 0, !1);
-      tempContext.fill();
+      const [scaledCoor] = DrawHelper.getPropertiesWithScale(point);
 
       tempContext.beginPath();
-      tempContext.arc(point[1] + point[3], point[2], 10, Math.PI * 2, 0, !1);
-      tempContext.fill();
-
-      tempContext.beginPath();
-      tempContext.arc(point[1], point[2] + point[4], 10, Math.PI * 2, 0, !1);
+      tempContext.arc(scaledCoor[1], scaledCoor[2], 10, Math.PI * 2, 0, !1);
       tempContext.fill();
 
       tempContext.beginPath();
       tempContext.arc(
-        point[1] + point[3],
-        point[2] + point[4],
+        scaledCoor[1] + scaledCoor[3],
+        scaledCoor[2],
+        10,
+        Math.PI * 2,
+        0,
+        !1,
+      );
+      tempContext.fill();
+
+      tempContext.beginPath();
+      tempContext.arc(
+        scaledCoor[1],
+        scaledCoor[2] + scaledCoor[4],
+        10,
+        Math.PI * 2,
+        0,
+        !1,
+      );
+      tempContext.fill();
+
+      tempContext.beginPath();
+      tempContext.arc(
+        scaledCoor[1] + scaledCoor[3],
+        scaledCoor[2] + scaledCoor[4],
         10,
         Math.PI * 2,
         0,

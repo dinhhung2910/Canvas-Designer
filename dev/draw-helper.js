@@ -9,7 +9,7 @@ import TextHandler from './text-handler';
 import ZoomHandler from './zoom-handler';
 
 const DrawHelper = {
-  redraw: function(scale) {
+  redraw: async function(scale) {
     const points = globalObjects.points;
 
     tempContext.clearRect(0, 0, innerWidth, innerHeight);
@@ -23,7 +23,7 @@ const DrawHelper = {
       point = points[i];
 
       if (point && point.length && this[point[0]]) {
-        this[point[0]](
+        await this[point[0]](
           context,
           ...this.getPropertiesWithScale(point[1], point[2], scale));
       }
@@ -167,22 +167,27 @@ const DrawHelper = {
     this.handleOptions(context, options, true);
 
     let image = ImageHandler.images[point[5]];
-    if (!image) {
-      image = new Image();
-      image.onload = function() {
-        const index = ImageHandler.images.length;
 
-        ImageHandler.lastImageURL = image.src;
-        ImageHandler.lastImageIndex = index;
+    return new Promise((resolve) => {
+      if (!image) {
+        image = new Image();
+        image.onload = function() {
+          const index = ImageHandler.images.length;
 
-        ImageHandler.images.push(image);
+          ImageHandler.lastImageURL = image.src;
+          ImageHandler.lastImageIndex = index;
+
+          ImageHandler.images.push(image);
+          context.drawImage(image, point[1], point[2], point[3], point[4]);
+          resolve();
+        };
+        image.src = point[0];
+        return;
+      } else {
         context.drawImage(image, point[1], point[2], point[3], point[4]);
-      };
-      image.src = point[0];
-      return;
-    }
-
-    context.drawImage(image, point[1], point[2], point[3], point[4]);
+        resolve();
+      }
+    });
   },
   pdf: function(context, point, options) {
     this.handleOptions(context, options, true);

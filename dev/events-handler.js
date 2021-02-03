@@ -64,7 +64,11 @@ addEvent(canvas, isTouch ? 'touchstart' : 'mousedown', function(e) {
   else if (cache.isQuadraticCurve) quadraticHandler.mousedown(e);
   else if (cache.isBezierCurve) bezierHandler.mousedown(e);
   else if (cache.isDragLastPath || cache.isDragAllPaths) {
-    DragHelper.mousedown(e);
+    if (isMultiTouch) {
+      DragHelper.cancelMousedown(e);
+    } else {
+      DragHelper.mousedown(e);
+    }
   } else if (cache.isPencil) {
     if (isMultiTouch) {
       PencilHandler.cancelMousedown();

@@ -169,6 +169,9 @@ const DragHelper = {
 
     g.ismousedown = true;
   },
+  cancelMousedown: function(e) {
+    this.mouseup();
+  },
   mouseup: function() {
     const g = this.global;
 

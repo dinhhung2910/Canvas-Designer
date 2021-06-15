@@ -45,7 +45,7 @@
     "hammerjs": "^2.0.8",
     "html-webpack-plugin": "^5.0.0",
     "mini-css-extract-plugin": "^1.3.3",
-    "optimize-css-assets-webpack-plugin": "^5.0.4",
+    "optimize-css-assets-webpack-plugin": "^6.0.0",
     "terser-webpack-plugin": "^5.1.1",
     "webpack": "^5.12.2",
     "webpack-dev-server": "^3.11.1",
